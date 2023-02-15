@@ -1,3 +1,4 @@
+from leet.medium.flattenlistiterator import NestedInteger
 from leet.structures import TreeNode
 from yandex import lektioneinz, lektionvier, lektionfunf
 from leet import testit
@@ -539,35 +540,61 @@ from leet import testit
 #     ],
 # ])
 
-testit.run('medium.wordsearch', [
-    [
-        [
-            ["A", "B", "C", "E"],
-            ["S", "F", "C", "S"],
-            ["A", "D", "E", "E"]
-        ],
-        "ABCCED"
-    ],
-    [
-        [
-            ["A", "B", "C", "E"],
-            ["S", "F", "C", "S"],
-            ["A", "D", "E", "E"]
-        ],
-        "SEE"
-    ],
-    [
-        [
-            ["A", "B", "C", "E"],
-            ["S", "F", "C", "S"],
-            ["A", "D", "E", "E"]
-        ],
-        "ABCB"
-    ],
-    [
-        [
-            ["A"],
-        ],
-        "A"
-    ]
+# testit.run('medium.wordsearch', [
+#     [
+#         [
+#             ["A", "B", "C", "E"],
+#             ["S", "F", "C", "S"],
+#             ["A", "D", "E", "E"]
+#         ],
+#         "ABCCED"
+#     ],
+#     [
+#         [
+#             ["A", "B", "C", "E"],
+#             ["S", "F", "C", "S"],
+#             ["A", "D", "E", "E"]
+#         ],
+#         "SEE"
+#     ],
+#     [
+#         [
+#             ["A", "B", "C", "E"],
+#             ["S", "F", "C", "S"],
+#             ["A", "D", "E", "E"]
+#         ],
+#         "ABCB"
+#     ],
+#     [
+#         [
+#             ["A"],
+#         ],
+#         "A"
+#     ]
+# ])
+
+# testit.run('medium.spiralmatrix', [
+#     [
+#         [
+#             [1, 2, 3],
+#             [4, 5, 6],
+#             [7, 8, 9]
+#         ]
+#     ],
+#     [
+#         [
+#             [1, 2, 3, 4],
+#             [5, 6, 7, 8],
+#             [9, 10, 11, 12]
+#         ]
+#     ]
+# ])
+
+testit.run('easy.pascaltriangle', [
+    [1],
+    [2],
+    [3],
+    [4],
+    [5],
+    [6],
 ])
