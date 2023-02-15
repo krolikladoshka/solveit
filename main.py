@@ -1,5 +1,7 @@
 import colorama
 
+from leet import testit
+
 colorama.init()
 
 # print(lektioneinz.frequentsymbol('asdaffbbfbbaaa'))
@@ -655,7 +657,17 @@ colorama.init()
 #     ["aaaaaa", "bbaaaa"],
 # ])
 
-from smallapps.games.gameoflifeascii.main import start
+# from smallapps.games.gameoflifeascii.main import start
 
-start(delay=1/45, r=50, c=170)
+# start(delay=1/45, r=50, c=170)
 # restart(delay=1/60)
+
+testit.run('medium.setmatrixzeroes', [
+    [
+        [
+            [0, 1, 2, 0],
+            [3, 4, 5, 2],
+            [1, 3, 1, 5]
+        ]
+    ]
+])
