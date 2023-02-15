@@ -1,3 +1,4 @@
+from leet.structures import TreeNode
 from yandex import lektioneinz, lektionvier, lektionfunf
 from leet import testit
 
@@ -343,7 +344,116 @@ from leet import testit
 # ])
 
 
-testit.run('medium.mergeintervals', [
-    [[[1, 3], [2, 6], [8, 10], [15, 18]]],
-    [[[1, 4], [4, 5]]]
+# testit.run('medium.mergeintervals', [
+#     [[[1, 3], [2, 6], [8, 10], [15, 18]]],
+#     [[[1, 4], [4, 5]]]
+# ])
+
+# testit.run('medium.numberofislands', [
+#     [
+#         [
+#             ["1", "1", "1", "1", "0"],
+#             ["1", "1", "0", "1", "0"],
+#             ["1", "1", "0", "0", "0"],
+#             ["0", "0", "0", "0", "0"]
+#         ]
+#     ],
+#     [
+#         [
+#             ["1", "1", "0", "0", "0"],
+#             ["1", "1", "0", "0", "0"],
+#             ["0", "0", "1", "0", "0"],
+#             ["0", "0", "0", "1", "1"]
+#         ]
+#     ],
+#     [
+#         [
+#             ["1", "1", "1"],
+#             ["0", "1", "0"],
+#             ["1", "1", "1"]
+#         ]
+#     ],
+#
+#     [
+#         [
+#             ["1", "0", "1", "1", "1"],
+#             ["1", "0", "1", "0", "1"],
+#             ["1", "1", "1", "0", "1"]
+#         ]
+#     ]
+# ])
+
+# testit.run('medium.decodestring', [
+#     ["3[a]2[bc]"],
+#     ["3[a2[c]]"],
+#     ["10[leet]"],
+#     ["3[a2[c]4[bf]]"],
+#     ["2[abc]3[cd]ef"],
+# ])
+
+# testit.run('hard.trappingrainwater', [
+#     [[2, 0, 2]],
+#     [[0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]],
+#     [[4, 2, 0, 3, 2, 5]],
+# ])
+
+# testit.run('hard.sumofprefixscoresofstrings', [
+#     [["abcd"]],
+#     [["abc", "ab", "bc", "b"]],
+# ])
+
+# testit.run('medium.generateparentheses', [
+#     [0],
+#     [1],
+#     [2],
+#     [3],
+#     [4],
+#     [5],
+#     [6],
+#     [7],
+#     [8],
+#     [9],
+# ])
+
+# testit.run('medium.combinations', [
+#     [5, 2],
+#     [4, 2],
+#     [1, 1],
+#     [4, 1],
+#     [4, 3],
+#     [2, 1],
+#     [2, 2],
+#     [5, 2],
+# ])
+
+# testit.run('medium.findleavesofbinarytree', [
+#     [
+#         TreeNode(
+#             1,
+#             TreeNode(
+#                 2,
+#                 TreeNode(
+#                     4,
+#                     TreeNode(
+#                         6,
+#                     ),
+#                     TreeNode(
+#                         7,
+#                     ),
+#                 ),
+#                 TreeNode(
+#                     5,
+#                 )
+#             ),
+#             TreeNode(
+#                 3,
+#             )
+#         )
+#     ]
+# ])
+
+testit.run('medium.permutations', [
+    [[1,2,3]],
+    [[1, 2]],
+    [[1, 2, 3, 4]]
 ])
