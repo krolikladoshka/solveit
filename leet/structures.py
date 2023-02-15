@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Optional
 
 
 class ListNode:
@@ -26,24 +27,45 @@ def linked_list_to_list(fn):
     return dec
 
 
+def create_linked_list(lst) -> Optional[ListNode]:
+    if lst:
+        first = ListNode(lst[0])
+        current = first
+        for i in range(1, len(lst)):
+            node = ListNode(lst[i])
+            current.next = node
+            current = node
+
+        return first
+
+
 def list_to_linked_list(fn):
-    def create_list(lst):
-        if lst:
-            first = ListNode(lst[0])
-            current = first
-            for i in range(1, len(lst)):
-                node = ListNode(lst[i])
-                current.next = node
-                current = node
-
-            return first
-
     @wraps(fn)
     def dec(*args, **kwargs):
         self, *args = args
         return fn(self, *[
-            create_list(arg) for arg in args
+            create_linked_list(arg) if isinstance(arg, list) else arg
+            for arg in args
         ], **kwargs)
+
+    return dec
+
+
+def list_of_lists_to_list_of_linked_lists(fn):
+    @wraps(fn)
+    def dec(*args, **kwargs):
+        self, *args = args
+        res_args = []
+
+        for arg in args:
+            if isinstance(arg, list):
+                res_args.append(
+                    [create_linked_list(lst) for lst in arg]
+                )
+            else:
+                res_args.append(arg)
+
+        return fn(self, *res_args, **kwargs)
 
     return dec
 
