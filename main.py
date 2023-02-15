@@ -1,4 +1,5 @@
 from leet.medium.flattenlistiterator import NestedInteger
+from leet.medium.insertdeletegetrandom import RandomizedSet
 from leet.structures import TreeNode
 from yandex import lektioneinz, lektionvier, lektionfunf
 from leet import testit
@@ -615,12 +616,39 @@ from leet import testit
 #     ]
 # ])
 
-testit.run('medium.minimumpathsum', [
-    [
-        [
-            [1, 3, 1],
-            [1, 5, 1],
-            [4, 2, 1]
-        ],
-    ]
-])
+# testit.run('medium.minimumpathsum', [
+#     [
+#         [
+#             [1, 3, 1],
+#             [1, 5, 1],
+#             [4, 2, 1]
+#         ],
+#     ]
+# ])
+
+# testit.run('medium.threesum', [
+#     # [[-1, 0, 1, 2, -1, -4]],
+#     # [[0, 1, 1]],
+#     # [[0, 0, 0]],
+#     [[0, 0, 0, 0]]
+# ])
+#
+# testit.run('medium.productofarrayexceptself', [
+#     [[1,2,3,4]],
+#     [[-1,1,0,-3,3]],
+# ])
+
+# s = RandomizedSet()
+# print(s.insert(0))
+# print(s.insert(1))
+# print(s.remove(0))
+# print(s.insert(2))
+# print(s.remove(1))
+# print(s.getRandom())
+# s = RandomizedSet()
+# print(s.remove(0))
+# print(s.remove(0))
+# print(s.insert(0))
+# print(s.getRandom())
+# print(s.remove(0))
+# print(s.insert(0))
