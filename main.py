@@ -589,12 +589,38 @@ from leet import testit
 #         ]
 #     ]
 # ])
+#
+# testit.run('easy.pascaltriangle', [
+#     [1],
+#     [2],
+#     [3],
+#     [4],
+#     [5],
+#     [6],
+# ])
 
-testit.run('easy.pascaltriangle', [
-    [1],
-    [2],
-    [3],
-    [4],
-    [5],
-    [6],
+# testit.run('hard.dungeongame', [
+#     [
+#         [
+#             [-2, -3, 3],
+#             [-5, -10, 1],
+#             [10, 30, -5]
+#         ]
+#     ],
+#     [
+#         [
+#             [0, 0, 0],
+#             [1, 1, -1]
+#         ]
+#     ]
+# ])
+
+testit.run('medium.minimumpathsum', [
+    [
+        [
+            [1, 3, 1],
+            [1, 5, 1],
+            [4, 2, 1]
+        ],
+    ]
 ])
