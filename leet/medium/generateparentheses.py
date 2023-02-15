@@ -4,15 +4,19 @@ from typing import List
 
 class Solution:
     def generateParenthesis(self, n: int) -> List[str]:
-        def backtrack(left, right, parentheses):
+        def generate(lefts, rights, parentheses):
             if len(parentheses) == n * 2:
-                yield parentheses
-            if left < n:
-                parentheses += '('
-                yield from backtrack(left + 1, right, parentheses)
-                parentheses = parentheses[:len(parentheses) - 1]
-            if right < left:
-                parentheses += ')'
-                yield from backtrack(left, right + 1, parentheses)
-        return list(backtrack(0, 0, ''))
+                yield parentheses[:]
 
+                return
+            if lefts < n:
+                parentheses.append('(')
+                yield from generate(lefts + 1, rights, parentheses)
+                parentheses.pop()
+
+            if rights < lefts:
+                parentheses.append(')')
+                yield from generate(lefts, rights + 1, parentheses)
+                parentheses.pop()
+
+        return list(generate(0, 0, []))

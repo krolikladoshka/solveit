@@ -11,15 +11,16 @@ class Solution:
         def traverse(r):
             if not r:
                 return -1
-
             left_height = traverse(r.left)
             right_height = traverse(r.right)
-            current_height = max(left_height, right_height) + 1
+            height = max(left_height, right_height) + 1
 
-            if current_height > len(result) - 1:
+            if height >= len(result):
                 result.append([])
-            result[current_height].append(r.val)
+            result[height].append(r.val)
 
-            return current_height
+            return height
+
         traverse(root)
+
         return result

@@ -62,4 +62,3 @@ class Solution:
             return False
         solve(0, 0)
         return board
-
