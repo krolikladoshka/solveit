@@ -1,0 +1,181 @@
+from yandex import lektioneinz, lektionvier, lektionfunf
+from leet import testit
+
+# print(lektioneinz.frequentsymbol('asdaffbbfbbaaa'))
+# print(lektioneinz.findmax([]))
+# print(lektioneinz.findmax([1]))
+# print(lektioneinz.findmax([1,2,3,6,9,1,2]))
+# print(lektioneinz.findmaxandsecond([1,2,3,4,5,6,7,8,9]))
+# print(lektioneinz.findmaxandsecond([]))
+# print(lektioneinz.findmaxandsecond([1]))
+# print(lektioneinz.findmaxandsecond([3, 3]))
+# print(lektioneinz.findmaxandsecond([1,2,3,9, 4, 5, 7, 9]))
+# print('3')
+# print(lektioneinz.findmaxandsecond1([1,2,3,4,5,6,7,8,9]))
+# print(lektioneinz.findmaxandsecond1([3, 3]))
+# print(lektioneinz.findmaxandsecond1([1, 2, 3]))
+
+# print(lektioneinz.findmineven([]))
+# print(lektioneinz.findmineven([1]))
+# print(lektioneinz.findmineven([1, 3, 5, 7]))
+# print(lektioneinz.findmineven([1, 3, 5, 7, 2]))
+# print(lektioneinz.findmineven([1, 3, 5, 7, 4, 8, 9, 2]))
+# print(lektioneinz.findmineven([4, 6, 8, 10, 2, 1]))
+
+# print(lektioneinz.shortwords(['aa', 'bbb', 'bb', 'b']))
+# print(lektioneinz.shortwords(['aa', 'bbb', 'bb', 'bb', 'ffff', 'cc']))
+
+# print(lektioneinz.rle('AAAABBBCCXYZDDDDEEEFFFAAAAAA' + 'B' * 28))
+# print(lektioneinz.rle('ABCDEFGDH'))
+
+# print(lektioneinz.checkdictmiss(['abc', 'dbe', 'pfgd'], ['abcd', 'dbeq', 'pf']))
+
+# print([1, 2, 5, 6, 7, 1, 6, 3, 10, 11, 12, 11, 13, 17, 8, 0, -16, 150])
+# print(lektionvier.sortscores([1, 2, 5, 6, 7, 1, 6, 3, 10, 11, 12, 11, 13, 17, 8, 0, -16, 150]))
+#
+# print(lektionvier.checknumbers(111, 112))
+# print(lektionvier.checknumbers(111, 111))
+# print(lektionvier.checknumbers(57, 75))
+# print(lektionvier.checknumbers(3121, 1123))
+# print(lektionvier.checknumbers(3111, 1123))
+#
+# print(lektionvier.checknumbers1(111, 112))
+# print(lektionvier.checknumbers1(111, 111))
+# print(lektionvier.checknumbers1(57, 75))
+# print(lektionvier.checknumbers1(3121, 1123))
+# print(lektionvier.checknumbers1(3111, 1123))
+
+# print(lektionvier.beatingrooks([(1, 1), (1, 5), (2, 5)]))
+# print(lektionvier.hist('Hello, World!'))
+# print(lektionvier.hist('TestimTestim srakin pestim lorem ipsum schrödinger kater'))
+#
+# print([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+# print(lektionfunf.prefixsum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+
+# print([1, 2, 0, 1, 0, 2, 1, 0])
+# print(lektionfunf.prefzeroes([1, 2, 0, 1, 0, 2, 1, 0]))
+# print(lektionfunf.prefzeroes1([1, 2, 0, 1, 0, 2, 1, 0]))
+# print('#')
+# print([1, 0, 1, 1, 0, 0, 1])
+# print(lektionfunf.prefzeroes([1, 0, 1, 1, 0, 0, 1]))
+# print(lektionfunf.prefzeroes1([1, 0, 1, 1, 0, 0, 1]))
+#
+# print(lektionfunf.rsm(lektionfunf.prefzeroes1([1, 2, 0, 1, 0, 2, 1, 0]), 5, 8))
+
+
+# print(lektionfunf.greaterk([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))
+# print(lektionfunf.greaterk1([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))
+
+# testit.run('easy.twosum', [
+#     [[3, 2, 4], 6],
+#     [[3, 3], 6],
+#     [[2,7,11,15], 9],
+#     [[11, 2, 15, 7], 9]
+# ])
+
+# testit.run('easy.palindromenumber', [
+#     [121],
+#     [10],
+#     [0],
+#     [-1],
+#     [-123],
+#     [123],
+#     [97879],
+#     [90788709]
+# ])
+
+# testit.run('easy.longestcommonprefix',[
+#     [["flower","flow","flight"]],
+#     [["reflower","flow","flight"]],
+#     [["dog","racecar","car"]],
+#     [["dog"]],
+#     [[]],
+#     [[""]],
+#     [["doggo", "dogging", "doggostyle"]],
+#     [["aa", "bb", "aaa", "bbbb", "bbbb", "b", "bbbc"]]
+# ])
+
+# testit.run('easy.validparenthesis', [
+#     ["()"],
+#     ["()[]{}"],
+#     [")))((("],
+#     ["([()])"],
+#     ["({[()]})"],
+#     ["({[()]}}"],
+# ])
+
+# testit.run('easy.mergetwosortedlists', [
+#     [[1, 2, 3], [4, 5, 6]],
+#     [[1,2,4], [1,3,4]],
+#     [[], []],
+#     [[1, 2, 3], []],
+#     [[], [1,2,3]],
+#     [[1,2,4], [-1, 1,3,4]],
+#     [[-5, 0, 4, 5], [1, 2, 4, 6]],
+# ])
+
+# testit.run('easy.removeduplicatesfromsortedarray', [
+#     [[1,1,2]],
+#     [[0,0,1,1,1,2,2,3,3,4]],
+#     [[1, 2, 3, 4, 5]],
+#     [[1]],
+#     [[]]
+# ])
+
+# testit.run('easy.removeelement', [
+#     [[3, 2, 2, 3], 3],
+#     [[0, 1, 2, 2, 3, 0, 4, 2], 2],
+#     [[], 10],
+#     [[1, 2, 3, 4, 5, 5], 6],
+#     [[1], 1],
+#     [[], None]
+# ])
+
+# testit.run('easy.lengthoflastword', [
+#     ["Hello World"],
+#     ["   fly me   to   the moon  "],
+#     ["   "],
+#     ["test"],
+#     ["   test   "],
+#     [" test test  t "],
+#     ["t"],
+# ])
+
+# testit.run('easy.searchindexposition', [
+#     [[1, 3, 5, 6], 5],
+#     [[1, 3, 5, 6], 2],
+#     [[1, 3, 5, 6], 7],
+#     [[], 1],
+# ])
+
+# testit.run('easy.sqrtx', [
+#     [1],
+#     [2],
+#     [4],
+#     [5],
+#     [8],
+#     [9],
+#     [121],
+#     [400],
+#     [99 * 99],
+#     [99 * 100],
+# ])
+
+# testit.run('easy.mergesortedarrays', [
+#     [[1, 2, 3, 0, 0, 0], 3, [4, 5, 6], 3],
+#     [[1, 2, 4, 0, 0, 0], 3, [1, 3, 4], 3],
+#     [[], 0, [], 0],
+#     [[1, 2, 3], 3, [], 0],
+#     [[0, 0, 0], 0, [1, 2, 3], 3],
+#     [[1, 2, 4, 0, 0, 0, 0], 3, [-1, 1, 3, 4], 4],
+#     [[-5, 0, 4, 5, 0, 0, 0, 0], 4, [1, 2, 4, 6], 4],
+# ])
+
+testit.run('easy.removeduplicatesfromsortedlist', [
+    [[1, 1, 2]],
+    [[1, 1, 2, 3]],
+    [[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]],
+    [[1, 2, 3, 4, 5]],
+    [[1]],
+    [[]]
+])
