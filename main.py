@@ -1,8 +1,6 @@
-from leet.medium.flattenlistiterator import NestedInteger
-from leet.medium.insertdeletegetrandom import RandomizedSet
-from leet.structures import TreeNode
-from yandex import lektioneinz, lektionvier, lektionfunf
-from leet import testit
+import colorama
+
+colorama.init()
 
 # print(lektioneinz.frequentsymbol('asdaffbbfbbaaa'))
 # print(lektioneinz.findmax([]))
@@ -652,3 +650,12 @@ from leet import testit
 # print(s.getRandom())
 # print(s.remove(0))
 # print(s.insert(0))
+
+# testit.run('easy.issubsequence', [
+#     ["aaaaaa", "bbaaaa"],
+# ])
+
+from smallapps.games.gameoflifeascii.main import start
+
+start(delay=1/45, r=50, c=170)
+# restart(delay=1/60)
