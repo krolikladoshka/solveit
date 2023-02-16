@@ -662,12 +662,33 @@ colorama.init()
 # start(delay=1/45, r=50, c=170)
 # restart(delay=1/60)
 
-testit.run('medium.setmatrixzeroes', [
+# testit.run('medium.setmatrixzeroes', [
+#     [
+#         [
+#             [0, 1, 2, 0],
+#             [3, 4, 5, 2],
+#             [1, 3, 1, 5]
+#         ]
+#     ]
+# ])
+
+# testit.run('medium.substringxorqueries', [
+#     ["101101", [[0, 5], [1, 2]]]
+# ])
+
+testit.run('medium.spiralmatrix', [
     [
         [
-            [0, 1, 2, 0],
-            [3, 4, 5, 2],
-            [1, 3, 1, 5]
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9]
+        ]
+    ],
+    [
+        [
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 10, 11, 12]
         ]
     ]
 ])
