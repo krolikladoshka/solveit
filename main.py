@@ -1,6 +1,7 @@
 import colorama
 
 from leet import testit
+from leet.structures import TreeNode
 
 colorama.init()
 
@@ -693,7 +694,26 @@ colorama.init()
 #     ]
 # ])
 
-testit.run('medium.jumpgame2', [
-    [[2, 3, 1, 1, 4]],
-    [[0]],
+# testit.run('medium.jumpgame2', [
+#     [[2, 3, 1, 1, 4]],
+#     [[0]],
+# ])
+
+# testit.run('easy.pathsum', [
+#     [
+#         TreeNode(1, left=TreeNode(2)), 1
+#     ],
+#     [
+#         TreeNode(1, left=TreeNode(2)), 0
+#     ]
+# ])
+
+# testit.run('easy.mergetwo2darrayssummingvalues', [
+#     [[[1, 2], [2, 3], [4, 5]], [[1, 4], [3, 2], [4, 1]]]
+# ])
+
+testit.run('easy.floodfill', [
+    [
+        [[1,1,1],[1,1,0],[1,0,1]], 1, 1, 2
+    ]
 ])
