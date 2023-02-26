@@ -1,7 +1,10 @@
 import colorama
 
 from leet import testit
+from leet.medium.designbrowserhistory import BrowserHistory
 from leet.structures import TreeNode
+from leet.testit import print_matrix
+from smallapps.games import minesweeper
 
 colorama.init()
 
@@ -712,8 +715,68 @@ colorama.init()
 #     [[[1, 2], [2, 3], [4, 5]], [[1, 4], [3, 2], [4, 1]]]
 # ])
 
-testit.run('easy.floodfill', [
-    [
-        [[1,1,1],[1,1,0],[1,0,1]], 1, 1, 2
-    ]
-])
+# testit.run('easy.floodfill', [
+#     [
+#         [[1,1,1],[1,1,0],[1,0,1]], 1, 1, 2
+#     ]
+# ])
+
+# testit.run('medium.powxn', [
+#     # [2, 10],
+#     [2, -10]
+#     # [2, 2 ** 32 - 1],
+# ])
+
+# testit.run('medium.minesweeper', [
+#     [
+#         [
+#             ["E", "E", "E", "E", "E"],
+#             ["E", "E", "M", "E", "E"],
+#             ["E", "E", "E", "E", "E"],
+#             ["E", "E", "E", "E", "E"]
+#         ],
+#         [3, 0]
+#     ],
+#     [
+#         [
+#             ["E", "E", "E", "E", "E", "E", "E", "E"],
+#             ["E", "E", "E", "E", "E", "E", "E", "M"],
+#             ["E", "E", "M", "E", "E", "E", "E", "E"],
+#             ["M", "E", "E", "E", "E", "E", "E", "E"],
+#             ["E", "E", "E", "E", "E", "E", "E", "E"],
+#             ["E", "E", "E", "E", "E", "E", "E", "E"],
+#             ["E", "E", "E", "E", "E", "E", "E", "E"],
+#             ["E", "E", "M", "M", "E", "E", "E", "E"]
+#         ],
+#         [0, 0],
+#     ]
+# ], output_formatter=print_matrix)
+
+# testit.run('medium.flattenbinarytreetolinkedlist', [
+#     [
+#         TreeNode(
+#             val=1,
+#             left=TreeNode(
+#                 val=2,
+#                 left=TreeNode(val=3),
+#                 right=TreeNode(val=4)
+#             ),
+#             right=TreeNode(
+#                 val=5,
+#                 right=TreeNode(val=6)
+#             )
+#         )
+#     ]
+# ])
+
+# history = BrowserHistory('1')
+# history.visit('2')
+# history.visit('3')
+# history.visit('4')
+# history.visit('5')
+# print(history.back(2))
+# print(history.forward(2))
+#
+
+from smallapps.games.minesweeper.main import main
+main()

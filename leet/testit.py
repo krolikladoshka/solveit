@@ -15,9 +15,14 @@ def call(module: str, solution_postfix: str, *args, **kwargs):
     return getattr(solution_class(), function)(*args, **kwargs)
 
 
-def run(module: str, args_list: List[Any]) -> object:
+def run(module: str, args_list: List[Any], output_formatter=print) -> object:
     for i, args in enumerate(args_list):
         args_copy = deepcopy(args)
         res = call(module, '', *args)
         print(f'Run {i + 1}, args {args_copy}:')
-        print(res)
+        output_formatter(res)
+
+
+def print_matrix(res):
+    for row in res:
+        print(row)
