@@ -778,5 +778,8 @@ colorama.init()
 # print(history.forward(2))
 #
 
-from smallapps.games.minesweeper.main import main
-main()
+# from smallapps.games.minesweeper.main import main
+# main()
+
+from smallapps.games.gameoflifeascii.main import  main_pygame
+main_pygame()
