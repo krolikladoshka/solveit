@@ -1,3 +1,5 @@
+import random
+
 import colorama
 
 from leet import testit
@@ -780,6 +782,108 @@ colorama.init()
 
 # from smallapps.games.minesweeper.main import main
 # main()
+#
+# from smallapps.games.gameoflifeascii.main import  main_pygame
+# main_pygame()
+from smallapps.games.zuma.main import main
 
-from smallapps.games.gameoflifeascii.main import  main_pygame
-main_pygame()
+main()
+
+
+# def construct():
+#     visited = set()
+#     directions = [
+#         # down, up
+#         (1, 0), (-1, 0), (0, -1), (0, 1)
+#     ]
+#     n = 80
+#     m = 80
+#     r = []
+#     end = (79, 79)
+#     def can_step(i, j) -> bool:
+#         if i >= n or j >= m or j < 0 or i < 0:
+#             return False
+#         return (i, j) not in visited
+#
+#     def backtrack(i, j, result: list):
+#         if (i, j) == end:
+#             nonlocal r
+#             result.append((i, j))
+#             r = result[:]
+#             return True
+#         visited.add((i, j))
+#         possible_direction = []
+#         for direction in directions:
+#             next_i, next_j = i + direction[0], j + direction[1]
+#             if can_step(next_i, next_j):
+#                 possible_direction.append((next_i, next_j))
+#         while possible_direction:
+#             next = random.choice(possible_direction)
+#             result.append((i, j))
+#             if backtrack(next[0], next[1], result):
+#                 return True
+#             possible_direction.pop()
+#             result.pop()
+#         return False
+#     backtrack(0, 0, [])
+#     result = [[False] * m for _ in range(n)]
+#     for i, j in r:
+#         result[i][j] = True
+#     for i in range(n):
+#         for j in range(m):
+#             print(int(result[i][j]), end=' ')
+#         print()
+#     print(len(r))
+#     return r
+#
+# def construct_iterative(n, m, end):
+#     visited = set()
+#     directions = [
+#         # down, up
+#         (1, 0), (-1, 0), (0, -1), (0, 1)
+#     ]
+#     r = []
+#     def can_step(i, j) -> bool:
+#         if i >= n or j >= m or j < 0 or i < 0:
+#             return False
+#         return (i, j) not in visited
+#
+#     stack = []
+#     stack.append((0, 0))
+#     # result = []
+#     while stack:
+#         i, j = stack.pop()
+#         if (i, j) == end:
+#             r.append((i, j))
+#             # r = result + [(i, j)]
+#             break
+#         visited.add((i, j))
+#         possible_direction = []
+#         for direction in directions:
+#             next_i, next_j = i + direction[0], j + direction[1]
+#
+#             if not can_step(next_i, next_j):
+#                 continue
+#             possible_direction.append((next_i, next_j))
+#
+#         if possible_direction:
+#             random.shuffle(possible_direction)
+#             for next_i, next_j in possible_direction:
+#                 r.append((i, j))
+#                 stac
+#                 # stack.append((next_i, next_j, result + [(i, j)]))
+#
+#     result = [[False] * m for _ in range(n)]
+#     for i, j in r:
+#         result[i][j] = True
+#     for i in range(n):
+#         for j in range(m):
+#             print(int(result[i][j]), end=' ')
+#         print()
+#     print(len(r))
+#     return r
+
+# for i in range(3):
+# import sys
+# construct_iterative(4, 4, (3, 3))
+#     # print('####')
