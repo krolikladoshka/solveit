@@ -785,9 +785,9 @@ colorama.init()
 #
 # from smallapps.games.gameoflifeascii.main import  main_pygame
 # main_pygame()
-from smallapps.games.zuma.main import main
-
-main()
+# from smallapps.games.zuma.main import main
+#
+# main()
 
 
 # def construct():
@@ -887,3 +887,9 @@ main()
 # import sys
 # construct_iterative(4, 4, (3, 3))
 #     # print('####')
+
+testit.run('easy.checkifbinarystringhasatmostonesegmentofones', [
+    ['100'],
+    ['101'],
+    ['1011110'],
+])
