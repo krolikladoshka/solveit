@@ -75,14 +75,14 @@ colorama.init()
 # print(lektionfunf.greaterk([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))
 # print(lektionfunf.greaterk1([1, 2, 3, 4, 5, 6, 7, 8, 9], 5))
 
-# testit.run('easy.twosum', [
+# testit.run('leet.easy.twosum', [
 #     [[3, 2, 4], 6],
 #     [[3, 3], 6],
 #     [[2,7,11,15], 9],
 #     [[11, 2, 15, 7], 9]
 # ])
 
-# testit.run('easy.palindromenumber', [
+# testit.run('leet.easy.palindromenumber', [
 #     [121],
 #     [10],
 #     [0],
@@ -93,7 +93,7 @@ colorama.init()
 #     [90788709]
 # ])
 
-# testit.run('easy.longestcommonprefix',[
+# testit.run('leet.easy.longestcommonprefix',[
 #     [["flower","flow","flight"]],
 #     [["reflower","flow","flight"]],
 #     [["dog","racecar","car"]],
@@ -104,7 +104,7 @@ colorama.init()
 #     [["aa", "bb", "aaa", "bbbb", "bbbb", "b", "bbbc"]]
 # ])
 
-# testit.run('easy.validparenthesis', [
+# testit.run('leet.easy.validparenthesis', [
 #     ["()"],
 #     ["()[]{}"],
 #     [")))((("],
@@ -113,7 +113,7 @@ colorama.init()
 #     ["({[()]}}"],
 # ])
 
-# testit.run('easy.mergetwosortedlists', [
+# testit.run('leet.easy.mergetwosortedlists', [
 #     [[1, 2, 3], [4, 5, 6]],
 #     [[1,2,4], [1,3,4]],
 #     [[], []],
@@ -123,7 +123,7 @@ colorama.init()
 #     [[-5, 0, 4, 5], [1, 2, 4, 6]],
 # ])
 
-# testit.run('easy.removeduplicatesfromsortedarray', [
+# testit.run('leet.easy.removeduplicatesfromsortedarray', [
 #     [[1,1,2]],
 #     [[0,0,1,1,1,2,2,3,3,4]],
 #     [[1, 2, 3, 4, 5]],
@@ -131,7 +131,7 @@ colorama.init()
 #     [[]]
 # ])
 
-# testit.run('easy.removeelement', [
+# testit.run('leet.easy.removeelement', [
 #     [[3, 2, 2, 3], 3],
 #     [[0, 1, 2, 2, 3, 0, 4, 2], 2],
 #     [[], 10],
@@ -140,7 +140,7 @@ colorama.init()
 #     [[], None]
 # ])
 
-# testit.run('easy.lengthoflastword', [
+# testit.run('leet.easy.lengthoflastword', [
 #     ["Hello World"],
 #     ["   fly me   to   the moon  "],
 #     ["   "],
@@ -150,14 +150,14 @@ colorama.init()
 #     ["t"],
 # ])
 
-# testit.run('easy.searchindexposition', [
+# testit.run('leet.easy.searchindexposition', [
 #     [[1, 3, 5, 6], 5],
 #     [[1, 3, 5, 6], 2],
 #     [[1, 3, 5, 6], 7],
 #     [[], 1],
 # ])
 
-# testit.run('easy.sqrtx', [
+# testit.run('leet.easy.sqrtx', [
 #     [1],
 #     [2],
 #     [4],
@@ -170,7 +170,7 @@ colorama.init()
 #     [99 * 100],
 # ])
 
-# testit.run('easy.mergesortedarrays', [
+# testit.run('leet.easy.mergesortedarrays', [
 #     [[1, 2, 3, 0, 0, 0], 3, [4, 5, 6], 3],
 #     [[1, 2, 4, 0, 0, 0], 3, [1, 3, 4], 3],
 #     [[], 0, [], 0],
@@ -180,7 +180,7 @@ colorama.init()
 #     [[-5, 0, 4, 5, 0, 0, 0, 0], 4, [1, 2, 4, 6], 4],
 # ])
 
-# testit.run('easy.removeduplicatesfromsortedlist', [
+# testit.run('leet.easy.removeduplicatesfromsortedlist', [
 #     [[1, 1, 2]],
 #     [[1, 1, 2, 3]],
 #     [[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]],
@@ -189,7 +189,7 @@ colorama.init()
 #     [[]]
 # ])
 
-# testit.run('medium.addtwonumbers', [
+# testit.run('leet.medium.addtwonumbers', [
 #     [[9, 9, 9], [9, 9]],
 #     [[0], [9, 9, 9, 9]],
 #     [[9, 9], [9, 9, 9, 9]],
@@ -201,14 +201,14 @@ colorama.init()
 #     [[0], [9, 9, 9, 9, 9]]
 # ])
 
-# testit.run('hard.mergeksortedlists', [
+# testit.run('leet.hard.mergeksortedlists', [
 #     [[[1, 4, 5], [1, 3, 4], [2, 6]]],
 #     [[[1, 4, 5], [1, 3, 4]]],
 #     [[[1, 4, 5], [], [1, 3, 4], [2, 6], []]],
 #     [[[1, 4, 5], [], [1, 3, 4], [2, 6], []]],
 # ])
 
-# testit.run('easy.reverselinkedlist', [
+# testit.run('leet.easy.reverselinkedlist', [
 #     [[1, 2, 3]],
 #     [[1, 2, 3, 4]],
 #     [[1, 2]],
@@ -216,7 +216,7 @@ colorama.init()
 #     [[]],
 # ])
 
-# testit.run('hard.reversenodesinkgroup', [
+# testit.run('leet.hard.reversenodesinkgroup', [
 #     [[1, 2, 3, 4, 5], 2],
 #     [[1, 2], 2],
 #     [[1, 2, 3], 4],
@@ -228,7 +228,7 @@ colorama.init()
 #     [[], 5]
 # ])
 
-# testit.run('medium.reverselinkedlist2', [
+# testit.run('leet.medium.reverselinkedlist2', [
 #     [[1, 2, 3], 1, 2],
 #     [[1, 2, 3, 4], 2, 3],
 #     [[1, 2], 2, 2],
@@ -237,7 +237,7 @@ colorama.init()
 #     [[], 0, 0],
 # ])
 
-# testit.run('medium.findfirstandlastpositionofelementinsortedarray', [
+# testit.run('leet.medium.findfirstandlastpositionofelementinsortedarray', [
 #     [[5, 7, 7, 8, 8, 10], 6],
 #     [[5, 7, 7, 8, 8, 10], 8],
 #     [[5, 7, 7, 8, 8, 8], 8],
@@ -246,7 +246,7 @@ colorama.init()
 #     [[], 4],
 # ])
 
-# testit.run('easy.runningsumof1darray', [
+# testit.run('leet.easy.runningsumof1darray', [
 #     [[1, 2, 3, 4]],
 #     [[1, 1, 1, 1]],
 #     [[3, 1, 2, 10, 1]],
@@ -255,7 +255,7 @@ colorama.init()
 #     [[0]]
 # ])
 
-# testit.run('easy.findpivotindex', [
+# testit.run('leet.easy.findpivotindex', [
 #     [[1, 2, 3, 4]],
 #     [[2, 1, -1]],
 #     [[1, 7, 3, 6, 5, 6]],
@@ -266,13 +266,13 @@ colorama.init()
 #     [[0]]
 # ])
 
-# testit.run('easy.plusone', [
+# testit.run('leet.easy.plusone', [
 #     [[1, 2, 3, 4]],
 #     [[9, 8, 9, 9]],
 #     [[9]]
 # ])
 
-# testit.run('medium.dailytemperatures', [
+# testit.run('leet.medium.dailytemperatures', [
 #     [[73, 74, 75, 71, 69, 72, 76, 73]],
 #     [[30, 40, 50, 60]],
 #     [[30, 60, 90]],
@@ -281,7 +281,7 @@ colorama.init()
 #     [[90, 30, 30, 30, 30]],
 # ])
 
-# testit.run('hard.nqueens', [
+# testit.run('leet.hard.nqueens', [
 #     [1],
 #     [2],
 #     [3],
@@ -293,7 +293,7 @@ colorama.init()
 #     [9],
 # ])
 
-# testit.run('hard.sudokusolver', [
+# testit.run('leet.hard.sudokusolver', [
 #     [
 #         [
 #             ["5", "3", ".", ".", "7", ".", ".", ".", "."],
@@ -309,7 +309,7 @@ colorama.init()
 #     ],
 # ])
 
-# testit.run('medium.validsudoku', [
+# testit.run('leet.medium.validsudoku', [
 #     [
 #         [
 #             ["5", "3", ".", ".", "7", ".", ".", ".", "."],
@@ -352,12 +352,12 @@ colorama.init()
 # ])
 
 
-# testit.run('medium.mergeintervals', [
+# testit.run('leet.medium.mergeintervals', [
 #     [[[1, 3], [2, 6], [8, 10], [15, 18]]],
 #     [[[1, 4], [4, 5]]]
 # ])
 
-# testit.run('medium.numberofislands', [
+# testit.run('leet.medium.numberofislands', [
 #     [
 #         [
 #             ["1", "1", "1", "1", "0"],
@@ -391,7 +391,7 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.decodestring', [
+# testit.run('leet.medium.decodestring', [
 #     ["3[a]2[bc]"],
 #     ["3[a2[c]]"],
 #     ["10[leet]"],
@@ -399,18 +399,18 @@ colorama.init()
 #     ["2[abc]3[cd]ef"],
 # ])
 
-# testit.run('hard.trappingrainwater', [
+# testit.run('leet.hard.trappingrainwater', [
 #     [[2, 0, 2]],
 #     [[0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]],
 #     [[4, 2, 0, 3, 2, 5]],
 # ])
 
-# testit.run('hard.sumofprefixscoresofstrings', [
+# testit.run('leet.hard.sumofprefixscoresofstrings', [
 #     [["abcd"]],
 #     [["abc", "ab", "bc", "b"]],
 # ])
 
-# testit.run('medium.generateparentheses', [
+# testit.run('leet.medium.generateparentheses', [
 #     [0],
 #     [1],
 #     [2],
@@ -423,7 +423,7 @@ colorama.init()
 #     [9],
 # ])
 
-# testit.run('medium.combinations', [
+# testit.run('leet.medium.combinations', [
 #     [5, 2],
 #     [4, 2],
 #     [1, 1],
@@ -434,7 +434,7 @@ colorama.init()
 #     [5, 2],
 # ])
 
-# testit.run('medium.findleavesofbinarytree', [
+# testit.run('leet.medium.findleavesofbinarytree', [
 #     [
 #         TreeNode(
 #             1,
@@ -460,18 +460,18 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.permutations', [
+# testit.run('leet.medium.permutations', [
 #     [[1,2,3]],
 #     [[1, 2]],
 #     [[1, 2, 3, 4]]
 # ])
 
-# testit.run('hard.slidingwindowsmaximum',[
+# testit.run('leet.hard.slidingwindowsmaximum',[
 #     [[1,3,-1,-3,5,3,6,7], 3],
 #     [[1,3,-1,-3,5,3,6,7], 4]
 # ])
 
-# testit.run('medium.stringtointegeratoi', [
+# testit.run('leet.medium.stringtointegeratoi', [
 #     # ['42'],
 #     # ['+42'],
 #     # ['-42'],
@@ -486,7 +486,7 @@ colorama.init()
 #     [' -asdf'],
 # ])
 
-# testit.run('medium.searcha2dmatrix', [
+# testit.run('leet.medium.searcha2dmatrix', [
 #     [
 #         [
 #             [1, 3, 5, 7],
@@ -524,7 +524,7 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.searchina2dmatrix2', [
+# testit.run('leet.medium.searchina2dmatrix2', [
 #     [
 #         [
 #             [1, 4, 7, 11, 15],
@@ -547,7 +547,7 @@ colorama.init()
 #     ],
 # ])
 
-# testit.run('medium.wordsearch', [
+# testit.run('leet.medium.wordsearch', [
 #     [
 #         [
 #             ["A", "B", "C", "E"],
@@ -580,7 +580,7 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.spiralmatrix', [
+# testit.run('leet.medium.spiralmatrix', [
 #     [
 #         [
 #             [1, 2, 3],
@@ -597,7 +597,7 @@ colorama.init()
 #     ]
 # ])
 #
-# testit.run('easy.pascaltriangle', [
+# testit.run('leet.easy.pascaltriangle', [
 #     [1],
 #     [2],
 #     [3],
@@ -606,7 +606,7 @@ colorama.init()
 #     [6],
 # ])
 
-# testit.run('hard.dungeongame', [
+# testit.run('leet.hard.dungeongame', [
 #     [
 #         [
 #             [-2, -3, 3],
@@ -622,7 +622,7 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.minimumpathsum', [
+# testit.run('leet.medium.minimumpathsum', [
 #     [
 #         [
 #             [1, 3, 1],
@@ -632,14 +632,14 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.threesum', [
+# testit.run('leet.medium.threesum', [
 #     # [[-1, 0, 1, 2, -1, -4]],
 #     # [[0, 1, 1]],
 #     # [[0, 0, 0]],
 #     [[0, 0, 0, 0]]
 # ])
 #
-# testit.run('medium.productofarrayexceptself', [
+# testit.run('leet.medium.productofarrayexceptself', [
 #     [[1,2,3,4]],
 #     [[-1,1,0,-3,3]],
 # ])
@@ -659,7 +659,7 @@ colorama.init()
 # print(s.remove(0))
 # print(s.insert(0))
 
-# testit.run('easy.issubsequence', [
+# testit.run('leet.easy.issubsequence', [
 #     ["aaaaaa", "bbaaaa"],
 # ])
 
@@ -668,7 +668,7 @@ colorama.init()
 # start(delay=1/45, r=50, c=170)
 # restart(delay=1/60)
 
-# testit.run('medium.setmatrixzeroes', [
+# testit.run('leet.medium.setmatrixzeroes', [
 #     [
 #         [
 #             [0, 1, 2, 0],
@@ -678,11 +678,11 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.substringxorqueries', [
+# testit.run('leet.medium.substringxorqueries', [
 #     ["101101", [[0, 5], [1, 2]]]
 # ])
 
-# testit.run('medium.spiralmatrix', [
+# testit.run('leet.medium.spiralmatrix', [
 #     [
 #         [
 #             [1, 2, 3],
@@ -699,12 +699,12 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('medium.jumpgame2', [
+# testit.run('leet.medium.jumpgame2', [
 #     [[2, 3, 1, 1, 4]],
 #     [[0]],
 # ])
 
-# testit.run('easy.pathsum', [
+# testit.run('leet.easy.pathsum', [
 #     [
 #         TreeNode(1, left=TreeNode(2)), 1
 #     ],
@@ -713,23 +713,23 @@ colorama.init()
 #     ]
 # ])
 
-# testit.run('easy.mergetwo2darrayssummingvalues', [
+# testit.run('leet.easy.mergetwo2darrayssummingvalues', [
 #     [[[1, 2], [2, 3], [4, 5]], [[1, 4], [3, 2], [4, 1]]]
 # ])
 
-# testit.run('easy.floodfill', [
+# testit.run('leet.easy.floodfill', [
 #     [
 #         [[1,1,1],[1,1,0],[1,0,1]], 1, 1, 2
 #     ]
 # ])
 
-# testit.run('medium.powxn', [
+# testit.run('leet.medium.powxn', [
 #     # [2, 10],
 #     [2, -10]
 #     # [2, 2 ** 32 - 1],
 # ])
 
-# testit.run('medium.minesweeper', [
+# testit.run('leet.medium.minesweeper', [
 #     [
 #         [
 #             ["E", "E", "E", "E", "E"],
@@ -754,7 +754,7 @@ colorama.init()
 #     ]
 # ], output_formatter=print_matrix)
 
-# testit.run('medium.flattenbinarytreetolinkedlist', [
+# testit.run('leet.medium.flattenbinarytreetolinkedlist', [
 #     [
 #         TreeNode(
 #             val=1,
@@ -888,8 +888,67 @@ colorama.init()
 # construct_iterative(4, 4, (3, 3))
 #     # print('####')
 
-testit.run('easy.checkifbinarystringhasatmostonesegmentofones', [
-    ['100'],
-    ['101'],
-    ['1011110'],
-])
+# testit.run('leet.easy.checkifbinarystringhasatmostonesegmentofones', [
+#     ['100'],
+#     ['101'],
+#     ['1011110'],
+# ])
+
+# testit.run('codeforces.problemset.aplusb', [
+#     ['1 2'],
+#     ['3 4'],
+# ])
+# testit.run('codeforces.problemset.apowerbminusbpowera', [
+#     ['50 40'],
+#     ['98 99'],
+#     ['1 2'],
+# ])
+# testit.run('codeforces.problemset.thesum', [
+#     ['1'],
+#     ['2'],
+#     ['3'],
+#     ['4'],
+#     ['5'],
+#     ['10']
+# ])
+
+# testit.run('codeforces.problemset.scientificproblem', [
+#     ['1'],
+#     ['2'],
+#     ['3'],
+#     ['4'],
+#     ['5'],
+#     ['10']
+# ])
+# testit.run('codeforces.problemset.watermelon', [
+#     ['1'],
+#     ['2'],
+#     ['3'],
+#     ['4'],
+#     ['5'],
+#     ['10']
+# ])
+
+# testit.run('codeforces.problemset.b.icpcballoons', [
+#     [
+#         '6',
+#         '3', 'ABA',
+#         '1', 'A',
+#         '3', 'ORZ',
+#         '5', 'BAAAA',
+#         '4', 'BKPT',
+#         '10', 'CODEFORCES',
+#     ]
+# ])
+
+testit.run('codeforces.problemset.c.poweringtheheroeasy', [
+    [
+        '5\n3 3 3 0 0',
+        '6\n0 3 3 0 0 3',
+        '7\n1 2 3 0 4 5 0',
+        '7\n1 2 5 0 4 3 0',
+        '5\n3 1 0 0 4',
+    ],
+],
+   many_cases=True
+)
