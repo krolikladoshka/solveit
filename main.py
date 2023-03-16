@@ -941,13 +941,37 @@ colorama.init()
 #     ]
 # ])
 
-testit.run('codeforces.problemset.c.poweringtheheroeasy', [
+# testit.run('codeforces.problemset.c.poweringtheheroeasy', [
+#     [
+#         '5\n3 3 3 0 0',
+#         '6\n0 3 3 0 0 3',
+#         '7\n1 2 3 0 4 5 0',
+#         '7\n1 2 5 0 4 3 0',
+#         '5\n3 1 0 0 4',
+#     ],
+# ],
+#    many_cases=True
+# )
+
+# testit.run('codeforces.problemset.a.isitacat', [
+#     [
+#         '4\nmeOw',
+#         '14\nmMmeoOoWWWwwwW',
+#         '3\nmew',
+#         '7\nMmeEeUw',
+#         '4\nMEOW',
+#         '6\nMmyaVw',
+#         '5\nmeowA'
+#     ],
+# ],
+#    many_cases=True
+# )
+testit.run('codeforces.problemset.c.scoringsubsequences', [
     [
-        '5\n3 3 3 0 0',
-        '6\n0 3 3 0 0 3',
-        '7\n1 2 3 0 4 5 0',
-        '7\n1 2 5 0 4 3 0',
-        '5\n3 1 0 0 4',
+        '3\n1 2 3',
+        '2\n1 1',
+        '5\n5 5 5 5 5',
+        '6\n5 5 5 5 6',
     ],
 ],
    many_cases=True
