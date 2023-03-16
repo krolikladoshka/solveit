@@ -1,3 +1,4 @@
+-- https://leetcode.com/problems/trips-and-users/
 with
     unbannedUsers as (
         select

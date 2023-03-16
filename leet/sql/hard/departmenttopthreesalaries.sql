@@ -1,3 +1,4 @@
+-- https://leetcode.com/problems/department-top-three-salaries/
 select
     sub.departmentName as Department,
     sub.name as Employee,
