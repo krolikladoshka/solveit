@@ -966,13 +966,61 @@ colorama.init()
 # ],
 #    many_cases=True
 # )
-testit.run('codeforces.problemset.c.scoringsubsequences', [
-    [
-        '3\n1 2 3',
-        '2\n1 1',
-        '5\n5 5 5 5 5',
-        '6\n5 5 5 5 6',
-    ],
-],
-   many_cases=True
-)
+# testit.run('codeforces.problemset.c.scoringsubsequences', [
+#     [
+#         '3\n1 2 3',
+#         '2\n1 1',
+#         '5\n5 5 5 5 5',
+#         '6\n5 5 5 5 6',
+#     ],
+# ],
+#    many_cases=True
+# )
+
+# testit.run('leet.medium.validgraphtree', [
+#     # [5, [[0, 1], [0, 2], [0, 3], [1, 4]]],
+#     [5, [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]]
+# ])
+
+# testit.run('codeforces.problemset.a.walkingmaster', [
+#     [
+#         '-1 0 -1 2',
+#         '0 0 4 5',
+#         '-2 -1 1 1',
+#         '-3 2 -3 2',
+#         '2 -1 -1 -1',
+#         '1 1 0 2',
+#     ]
+# ], many_cases=True)
+
+# testit.run('codeforces.problemset.b.grabthecandles', [
+#     [
+#         '4\n1 2 3 4',
+#         '4\n1 1 1 2',
+#         '3\n1 4 3',
+#     ]
+# ], many_cases=True)
+
+# testit.run('codeforces.problemset.d.oddqueries', [
+#     [
+#         '''2
+# 5 5
+# 2 2 1 3 2
+# 2 3 3
+# 2 3 4
+# 1 5 5
+# 1 4 9
+# 2 4 3
+# 10 5
+# 1 1 1 1 1 1 1 1 1 1
+# 3 8 13
+# 2 5 10
+# 3 8 10
+# 1 10 2
+# 1 9 100'''
+#     ]
+# ])
+#
+
+from codeforces.problemset.e.interview import solution
+solution()
