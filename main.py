@@ -1,7 +1,11 @@
+import heapq
 import random
+from typing import List, Tuple, Optional
 
 import colorama
 
+from interviewquestions.decorators.countclassmethodcalls import test_method_calls_counter, \
+    test_bound_method_calls_counter
 from leet import testit
 from leet.medium.designbrowserhistory import BrowserHistory
 from leet.structures import TreeNode
@@ -1022,5 +1026,332 @@ colorama.init()
 # ])
 #
 
-from codeforces.problemset.e.interview import solution
-solution()
+# from codeforces.problemset.e.interview import solution
+# solution()
+
+# jewelry = input()
+# stones = input()
+#
+# jewelry = set(jewelry)
+#
+# counter = 0
+# for stone in stones:
+#     if stone in jewelry:
+#         counter += 1
+# print(counter)
+
+# n = int(input())
+#
+# vector = []
+# for i in range(n):
+#     vector.append(int(input()))
+#
+# max_sequence_length = 0
+# length = 0
+#
+# for val in vector:
+#     if val == 1:
+#         length += 1
+#     else:
+#         max_sequence_length = max(max_sequence_length, length)
+#         length = 0
+# if length != 0:
+#     max_sequence_length = max(max_sequence_length, length)
+# print(max_sequence_length, flush=True)
+
+# n = int(input())
+#
+# current = float('-inf')
+# for i in range(n):
+# 	next = int(input())
+# 	if current == next:
+# 		continue
+# 	else:
+# 		print(next)
+# 		current = next
+#
+
+# n = int(input())
+#
+#
+# def generate_parentheses(lefts, rights, result):
+#     if len(result) == 2 * n:
+#         print(''.join(result), flush=True)
+#
+#         return
+#
+#     if lefts < n:
+#         result.append('(')
+#         generate_parentheses(lefts + 1, rights, result)
+#         result.pop()
+#     if rights < lefts and rights < n:
+#         result.append(')')
+#         generate_parentheses(lefts, rights + 1, result)
+#         result.pop()
+#
+#
+# generate_parentheses(0, 0, [])
+
+# s1 = input()
+# s2 = input()
+#
+#
+# def solve():
+#     if len(s1) != len(s2):
+#         print(0, flush=True)
+#
+#         return
+#
+#     counter = [0] * 26
+#
+#     for c1, c2 in zip(s1, s2):
+#         counter[ord(c1) - ord('a')] += 1
+#         counter[ord(c2) - ord('a')] -= 1
+#
+#     for count in counter:
+#         if count != 0:
+#             print(0, flush=True)
+#
+#             return
+#     print(1, flush=True)
+#
+#
+# solve()
+
+# from collections import deque
+#
+# n = int(input())
+# coords: List[Tuple[int, int]] = []
+# graph = [
+#     [j for j in range(n) if i != j] for i in range(n)
+# ]
+#
+# for i in range(n):
+#     x, y = map(int, input().split())
+#     coords.append((x, y))
+#
+# max_length = int(input())
+# start, end = map(int, input().split())
+#
+# start -= 1
+# end -= 1
+# queue = deque([(start, 0)])
+# visited = set()
+#
+#
+# def distance(city1, city2) -> int:
+#     return abs(coords[city2][0] - coords[city1][0]) + abs(coords[city2][1] - coords[city1][1])
+#
+#
+# while queue:
+#     node, path_size = queue.popleft()
+#     if node == end:
+#         print(path_size, flush=True)
+#
+#         break
+#
+#     for neighbour in graph[node]:
+#         if neighbour not in visited:
+#             if distance(node, neighbour) > max_length:
+#                 continue
+#             queue.append((neighbour, path_size + 1))
+# else:
+#     print(-1, flush=True)
+#
+# try:
+#     n = int(input())
+#     coords: List[Tuple[int, int]] = []
+#     for i in range(n):
+#         x, y = map(int, input().split())
+#         coords.append((x, y))
+#
+#     max_length = int(input())
+#     start, end = map(int, input().split())
+#
+#     start -= 1
+#     end -= 1
+#     queue = [(start, 0)]
+#     visited = set()
+#
+#     def distance(city1, city2) -> int:
+#         return abs(coords[city2][0] - coords[city1][0]) + abs(coords[city2][1] - coords[city1][1])
+#
+#
+#     while queue:
+#         node, path_size = queue.pop(0)
+#         if node == end:
+#             print(path_size, flush=True)
+#
+#             break
+#
+#         for neighbour in range(n):
+#             if neighbour == node:
+#                 continue
+#             if neighbour not in visited:
+#                 if distance(node, neighbour) > max_length:
+#                     continue
+#                 visited.add(neighbour)
+#                 queue.append((neighbour, path_size + 1))
+#     else:
+#         print(-1, flush=True)
+# except Exception as e:
+#     import traceback
+#     print(e)
+#     print(traceback.print_tb(e.__traceback__))
+
+#
+# print('test')
+# a = [0] * 10
+# '''
+# Suggest a solution to find the number of adults by name in a database
+# '''
+# '''
+# create table "persons_less_than_18"
+# (
+#     id bigint primary key not null,
+#     birth_date date not null,
+#     name varchar(36) not null
+# )
+#
+# select
+#     count(*)
+# from persons
+# where (current_date() - birth_date) >= 18 and name == $1
+# '''
+# '''
+# Suppose we have an array of integers.
+# We have to return the indices of two integers, such that if we add them up,
+# we will reach to a specific target.
+# '''
+#
+#
+# def find_target(array: List[int], target: int) -> Optional[List[int]]:
+#     '''
+#     {
+#         (target - a[i]) -> i
+#         if target - a[j] in set:
+#             return j, s
+#     '''
+#     differences = {}
+#     # [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+#     for i in range(len(array)):
+#         difference = target - array[i]
+#
+#         if array[i] in differences:
+#             return [differences[array[i]], i]
+#         differences[difference] = i
+#
+#
+# array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# # print(find_indicies(array, 10))
+#
+# # print(find_indicies([2,8,12,15], 20))
+#
+# assert find_target([2,8,12,15], 20) == [1, 2]
+# assert find_target([1, 2, 3], 4) == [0, 2]
+# assert find_target([2, 2, 3], 4) in [[0, 1], [1, 0]]
+# assert find_target([2, 2], 4) in [[0, 1], [1, 0]]
+# assert find_target([8, 7, 2, 5, 3, 1], 10) in [[0, 2], [2, 0], [1, 4], [4, 1]]
+# assert find_target([1234, 5678, 9012], 14690) == [1, 2]
+# assert find_target([2,7,11,15], 9) == [0, 1]
+# assert find_target([3,2,4], 6) == [1, 2]
+# assert find_target([3,3], 6) == [0, 1]
+# assert find_target([1, 4, 45, 6, 10, 8], 16) == [3, 4]
+# assert find_target([0, 6], 6) == [0, 1]
+# assert find_target([6], 6) is None
+#
+# '''
+# Given a number of intervals, find all overlapping intervals,
+# merge the overlapping intervals and return the merged intervals in ascending order.
+# |-----------------|
+#          |---------------|
+#                              |------|
+#                  |--------------|
+#
+#  |-----------------------------------|
+# '''
+#
+# def merged_intervals(intervals: List[List[int]]) -> List[List[int]]:
+#     '''
+#     [1, 3],  [2, 4], [12, 14], [11, 15], [8, 10],
+#     [9, 11], [10, 13], [5, 7], [16, 20]
+#     '''
+#     result = []
+#     intervals.sort(key=lambda interval: interval[0])
+#
+#     start = intervals[0]
+#     i = 1
+#     while i < len(intervals):
+#         if intervals[i][0] > start[1]:
+#             result.append(start)
+#             start = intervals[i]
+#         else:
+#             start = [min(start[0], intervals[i][0]), max(start[1], intervals[i][1])]
+#         i += 1
+#     result.append(start)
+#
+#     return result
+#
+# intervals = [
+#     [1, 3], [12, 14], [2, 4], [11, 15], [8, 10],
+#     [9, 11], [10, 13], [5, 7], [16, 20]
+# ]
+# expected_intervals = [[1,4], [5, 7], [8, 15], [16, 20]]
+# assert merged_intervals(intervals) == expected_intervals
+# assert merged_intervals([[1,4], [5, 7], [8, 15]]) == [[1,4], [5, 7], [8, 15]]
+# assert merged_intervals([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]
+# # Explanation: since intervals [1,3] and [2,6] overlaps, merge them into [1,6].
+#
+# assert merged_intervals([[1,4],[4,5]]) == [[1,5]]
+# # Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+#
+# assert merged_intervals([[6, 8], [1, 9], [2, 4], [4, 7]]) == [[1, 9]]
+#
+# testit.run('codeforces.problemset.b.taxi', [
+#     [
+#         '5\n1 2 4 3 3'
+#     ],
+#     [
+#         # 1 - 2, 2 -2, 3 - 2, 4 - 2
+#         '8\n2 3 4 4 2 1 3 1'
+#     ],
+#     [
+#         '3\n3 3 2'
+#     ]
+# ])
+
+# testit.run('codeforces.problemset.c.cdandpwdcommands', [
+#     ['7\npwd\ncd /home/vasya\npwd\ncd ..\npwd\ncd vasya/../petya\npwd'],
+#     ['4\ncd /a/b\npwd\ncd ../a/b\npwd']
+# ])
+
+# testit.run('leet.medium.checkknighttourconfiguration', [
+#     [
+#         [
+#             [0, 11, 16, 5, 20],
+#             [17, 4, 19, 10, 15],
+#             [12, 1, 8, 21, 6],
+#             [3, 18, 23, 14, 9],
+#             [24, 13, 2, 7, 22]
+#         ],
+#     ],
+#     [
+#         [
+#             [0, 3, 6],
+#             [5, 8, 1],
+#             [2, 7, 4]
+#         ]
+#     ],
+#     [
+#         [
+#             [24, 11, 22, 17,  4],
+#             [21, 16,  5, 12,  9],
+#             [ 6, 23, 10,  3, 18],
+#             [15, 20,  1,  8, 13],
+#             [ 0,  7, 14, 19,  2]
+#         ]
+#     ]
+# ])
+
+# test_method_calls_counter()
+test_bound_method_calls_counter()

@@ -108,6 +108,9 @@ class Zuma(Entity):
 
 
 def main():
+    # TODO: bezier derivatives are wrong (edgy bezier movement)
+    # TODO: alpha masks for sprites (black/white background is drawn)
+    # TODO: zuma algorithm is wrong for edge cases
     sys.setrecursionlimit(2500)
     zuma = Zuma()
 
