@@ -85,7 +85,8 @@ impl Chip8Emulator {
 
 pub fn chip8_run() {
     let mut emulator = Chip8Emulator::new();
-    emulator.load_rom("tests/IBMlogo.ch8");
+    // emulator.load_rom("tests/IBMlogo.ch8");
+    emulator.load_rom("tests/test_opcode.ch8");
 
     emulator.run();    
 }

@@ -1,5 +1,6 @@
-use std::{cmp::{min}};
+use std::{cmp::{min}, collections::VecDeque};
 use std::path::Path;
+use rand::{self, Rng};
 
 const DEFAULT_CPU_SPEED: u32 = 700;
 const DEFAULT_POINTER_START: usize = 0x200;
@@ -8,10 +9,12 @@ const INSTRUCTION_SIZE: usize = 2;
 const TIMER_COUNTDOWN_RATE_PER_SECOND: u8 = 60;
 const REGISTERS_COUNT: usize = 16;
 const MEMORY_SIZE: usize = 4096;
+const STACK_SIZE: usize = 1024;
+const KEYS_COUNT: usize = 16;
+
 pub const DISPLAY_WIDTH: usize = 64;
 pub const DISPLAY_HEIGHT: usize = 32;
 pub const DISPLAY_SIZE: usize = DISPLAY_WIDTH * DISPLAY_HEIGHT;
-const KEYS_COUNT: usize = 16;
 
 
 const DEFAULT_FONT: [u8; 80] = [
@@ -39,9 +42,10 @@ pub struct Chip8 {
     delay_timer: u8,
     sound_timer: u8,
     pub registers: [u8; REGISTERS_COUNT],
-    pub speed: u32,
+    pub stack: VecDeque<usize>,
     pub memory: [u8; MEMORY_SIZE],
     pub canvas: [[u8; DISPLAY_WIDTH]; DISPLAY_HEIGHT],
+    pub speed: u32,
 }
 
 impl Chip8 {
@@ -52,6 +56,7 @@ impl Chip8 {
             delay_timer: 0,
             sound_timer: 0,
             registers: [0; REGISTERS_COUNT],
+            stack: VecDeque::with_capacity(STACK_SIZE / 4),
             speed: DEFAULT_CPU_SPEED,
             memory: [0; MEMORY_SIZE],
             canvas: [[0; DISPLAY_WIDTH]; DISPLAY_HEIGHT],
@@ -100,16 +105,6 @@ impl Chip8 {
     }
 
     pub fn cycle(&mut self) {
-        /*
-        implemented:
-            00E0 (clear screen)
-            1NNN (jump)
-            6XNN (set register VX)
-            7XNN (add value to register VX)
-            ANNN (set index register I)
-            DXYN (display/draw)
-            
-         */
         let sixty_hertz = self.speed / TIMER_COUNTDOWN_RATE_PER_SECOND as u32;
         
         for i in 0..1 {
@@ -165,15 +160,27 @@ impl Chip8 {
     }
 
     fn execute_next(&mut self, opcode: u16) {
-        let first_nibble = opcode >> 12;
-        let second_nibble = (opcode >> 8) & 0xF;
-        let third_nibble = (opcode >> 4) & 0xF;
-        let argument = opcode & 0xF;
+        /*
+        implemented:
+            00E0 (clear screen)
+            1NNN (jump)
+            6XNN (set register VX)
+            7XNN (add value to register VX)
+            ANNN (set index register I)
+            DXYN (display/draw)
+            00EE and 2NNN: Subroutines
+
+
+         */
+        let first_nibble = (opcode >> 12) as u8;
+        let second_nibble = ((opcode >> 8) & 0xF) as u8;
+        let third_nibble = ((opcode >> 4) & 0xF) as u8;
+        let argument = (opcode & 0xF) as u8;
         let x_register = second_nibble as usize;
         let y_register = third_nibble as usize;
 
         let byte_arg = (third_nibble << 4) | argument;
-        let long_byte_arg = (second_nibble << 8) | (third_nibble << 4) | argument;
+        let long_byte_arg = ((second_nibble as u16) << 8)| (third_nibble << 4) as u16 | argument as u16;
 
         match first_nibble {
             0x0 => {
@@ -182,11 +189,96 @@ impl Chip8 {
                 } else {
                     match byte_arg {
                         0xE0 => self.clear_screen(),
+                        0xEE => self.pointer = self.stack.pop_back().unwrap(),
                         _ => panic!("Unknown 0x0XXX opcode"),
                     }
                 }
             },
+            // + skips & jumps
             0x1 => self.pointer = long_byte_arg as usize,
+            0x2 => {
+                self.stack.push_back(self.pointer);
+                self.pointer = long_byte_arg as usize;
+            },
+            0x3 => {
+                if self.registers[x_register] == byte_arg {
+                    self.pointer += INSTRUCTION_SIZE;
+                }
+            },
+            0x4 => {
+                if self.registers[x_register] != byte_arg {
+                    self.pointer += INSTRUCTION_SIZE;
+                }
+            },
+            0x5 => {
+                if self.registers[x_register] == self.registers[y_register] {
+                    self.pointer += INSTRUCTION_SIZE;
+                }
+            },
+            0x9 => {
+                if self.registers[x_register] != self.registers[y_register] {
+                    self.pointer += INSTRUCTION_SIZE;
+                }
+            },
+            // - skips and
+            // + logic & arithmetic
+            0x8 => {
+                match argument {
+                    0x0 => self.registers[x_register] = self.registers[y_register],
+                    0x1 => self.registers[x_register] |= self.registers[y_register],
+                    0x2 => self.registers[x_register] &= self.registers[y_register],
+                    0x3 => self.registers[x_register] ^= self.registers[y_register],
+                    0x4 => {
+                        let (result, overflow) = self.registers[x_register].overflowing_add(
+                            self.registers[y_register]
+                        );
+                        self.registers[x_register] = result;
+                        
+                        if overflow {
+                            self.registers[0xF] = 1;
+                        } else {
+                            self.registers[0xF] = 0;
+                        }
+                    },
+                    0x5 => {
+                        let vx = self.registers[x_register];
+                        let vy = self.registers[y_register];
+                        
+                        if vy <= vx {
+                            self.registers[0xF] = 1;
+                        } else {
+                            self.registers[0xF] = 0;
+                        }
+                        
+                        self.registers[x_register] = vx.wrapping_sub(vy);
+                    },
+                    0x7 => {
+                        let vx = self.registers[x_register];
+                        let vy = self.registers[y_register];
+                        
+                        if vx <= vy {
+                            self.registers[0xF] = 1;
+                        } else {
+                            self.registers[0xF] = 0;
+                        }
+                        
+                        self.registers[x_register] = vy.wrapping_sub(vx);
+
+                    },
+                    0x6 => {
+                        self.registers[x_register] = self.registers[y_register];
+                        self.registers[0xF] = self.registers[x_register] & 1;
+                        self.registers[x_register] >>= 1;
+                    },
+                    0xE => {
+                        self.registers[x_register] = self.registers[y_register];
+                        self.registers[0xF] = self.registers[x_register] & 1;
+                        self.registers[x_register] = self.registers[x_register].wrapping_shl(1);
+                    },
+                    _ => {}
+                }
+            } 
+            // - logic & arithmetic
             0x6 => {
                 self.registers[x_register] = byte_arg as u8;
             },
@@ -195,6 +287,12 @@ impl Chip8 {
             },
             0xA => {
                 self.i = long_byte_arg as usize;
+            },
+            0xB => {
+                self.pointer = (long_byte_arg + self.registers[0] as u16) as usize;
+            },
+            0xC => {
+                self.registers[x_register] = (rand::thread_rng().gen_range(0..1024) | 0xFF) as u8;
             },
             0xD => {
                 self.draw(
