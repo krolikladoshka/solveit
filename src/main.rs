@@ -1,6 +1,7 @@
 use leet::hard::makingalargeisland::Solution;
 mod leet;
 mod smallapps;
+use smallapps::emulators::chip8::run::chip8_run;
 
 fn main() {
     // let args = vec![
@@ -16,23 +17,25 @@ fn main() {
     //     (vec![vec![1,2,1]], 2, 1),
     //     (vec![vec![1,2,1]], 2, 2),
     // ];
-    let args = vec![
-        vec![vec![1,1], vec![1,0]],
-        vec![vec![1,1], vec![1,1]],
-        vec![
-            vec![1, 1, 0, 1, 1],
-            vec![0, 1, 0, 1, 0],
-            vec![0, 0, 1, 1, 0],
-            vec![1, 1, 0, 0, 0],
-            vec![0, 1, 1, 0, 0],
-        ]
-    ];
-    for arg in args {
-        let result = Solution::largest_island(arg);
-        // for row in &result {
-        //     println!("{:?}", row);
-        // }
-        println!("{}", result);
-        // println!("{0}", Solution::network_delay_time(arg.0, arg.1, arg.2));
-    }
+    // let args = vec![
+    //     vec![vec![1,1], vec![1,0]],
+    //     vec![vec![1,1], vec![1,1]],
+    //     vec![
+    //         vec![1, 1, 0, 1, 1],
+    //         vec![0, 1, 0, 1, 0],
+    //         vec![0, 0, 1, 1, 0],
+    //         vec![1, 1, 0, 0, 0],
+    //         vec![0, 1, 1, 0, 0],
+    //     ]
+    // ];
+    // for arg in args {
+    //     let result = Solution::largest_island(arg);
+    //     // for row in &result {
+    //     //     println!("{:?}", row);
+    //     // }
+    //     println!("{}", result);
+    //     // println!("{0}", Solution::network_delay_time(arg.0, arg.1, arg.2));
+    // }
+
+    chip8_run();
 }
