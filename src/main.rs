@@ -1,5 +1,6 @@
 use leet::hard::makingalargeisland::Solution;
 mod leet;
+mod smallapps;
 
 fn main() {
     // let args = vec![
