@@ -3,13 +3,11 @@ extern crate piston;
 
 use std::path::Path;
 
-use graphics::types::Color;
-use graphics::{clear, rectangle, Context};
-use piston::{Loop, Event};
-use piston::event_loop::{EventSettings, Events};
-use piston::input::{RenderArgs, RenderEvent, UpdateArgs, UpdateEvent};
+use graphics::{clear, rectangle};
+use piston::{Loop, Event, Input, Button, Key, ButtonState};
+use piston::input::{UpdateArgs};
 use piston::window::WindowSettings;
-use piston_window::{PistonWindow, G2d, GfxDevice};
+use piston_window::{PistonWindow};
 
 use super::cpu::{Chip8, self, DISPLAY_HEIGHT, DISPLAY_WIDTH};
 
@@ -42,11 +40,57 @@ impl Chip8Emulator {
     }
 
     pub fn run(&mut self) {
+        let mut buttons = [
+            (Key::D1, 1), (Key::D2, 2), (Key::D3, 3), (Key::D4, 0xC),
+            (Key::Q, 4), (Key::W, 5), (Key::E, 6), (Key::R, 0xD),
+            (Key::A, 7), (Key::S, 8), (Key::D, 9), (Key::F, 0xE),
+            (Key::Z, 0xA), (Key::X, 0), (Key::C, 0xB), (Key::V, 0xF),
+        ];
+        
+        let cpu_frequency = 700;
+        let timer_frequency = 1f64/ 60f64;
+
+        let mut last_time = 0f64;
+
         while let Some(event) = self.window.next() {
             match event {
+                Event::Input(input, _) => {
+                    match input {
+                        Input::Button(args) => {
+                            if let Button::Keyboard(key) = args.button {
+                                if let Some(key_index) = buttons.iter().position(|&(k, _)| k == key) {
+                                    match args.state {
+                                        ButtonState::Press => self.chip8.keys[buttons[key_index].1] = 1,
+                                        ButtonState::Release => self.chip8.keys[buttons[key_index].1] = 0
+                                    }
+                                }
+                            }
+                        },
+                         _ => {}
+                    }
+                },
                 Event::Loop(l) => {
                     match l {
-                        Loop::Update(_args) => self.chip8.cycle(),
+                        Loop::Update(UpdateArgs{dt}) => {
+                            println!("DT {}", dt);
+                            if last_time >= timer_frequency {
+                                let ticks = (last_time / timer_frequency) as u8;
+                            
+                                self.chip8.decrement_timers(ticks);
+                            
+                                last_time = last_time - timer_frequency;
+                                println!("Ticks & last time {} {}", ticks, last_time);
+                            }
+                            println!("dt {}", dt);
+                            
+                            let cycles_to_run = (dt * cpu_frequency as f64).round() as usize;
+                            println!("cycles to run {}", cycles_to_run);
+                            for i in 0..cycles_to_run {
+                                self.chip8.cycle();
+                            }
+                            last_time += dt;
+                            println!("last time after {}", last_time);
+                        },
                         Loop::Render(_args) => {
                             self.window.draw_2d(&event,
                                 |context, graphics, _device| {
@@ -85,8 +129,7 @@ impl Chip8Emulator {
 
 pub fn chip8_run() {
     let mut emulator = Chip8Emulator::new();
-    // emulator.load_rom("tests/IBMlogo.ch8");
-    emulator.load_rom("tests/test_opcode.ch8");
+    emulator.load_rom("tests/chip8-test-suite.ch8");
 
     emulator.run();    
 }

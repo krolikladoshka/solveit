@@ -14,7 +14,6 @@ const KEYS_COUNT: usize = 16;
 
 pub const DISPLAY_WIDTH: usize = 64;
 pub const DISPLAY_HEIGHT: usize = 32;
-pub const DISPLAY_SIZE: usize = DISPLAY_WIDTH * DISPLAY_HEIGHT;
 
 
 const DEFAULT_FONT: [u8; 80] = [
@@ -42,6 +41,7 @@ pub struct Chip8 {
     delay_timer: u8,
     sound_timer: u8,
     pub registers: [u8; REGISTERS_COUNT],
+    pub keys: [u8; KEYS_COUNT],
     pub stack: VecDeque<usize>,
     pub memory: [u8; MEMORY_SIZE],
     pub canvas: [[u8; DISPLAY_WIDTH]; DISPLAY_HEIGHT],
@@ -56,6 +56,7 @@ impl Chip8 {
             delay_timer: 0,
             sound_timer: 0,
             registers: [0; REGISTERS_COUNT],
+            keys: [0; KEYS_COUNT],
             stack: VecDeque::with_capacity(STACK_SIZE / 4),
             speed: DEFAULT_CPU_SPEED,
             memory: [0; MEMORY_SIZE],
@@ -104,6 +105,16 @@ impl Chip8 {
         return opcode;
     }
 
+    pub fn decrement_timers(&mut self, ticks: u8) {
+        if self.delay_timer > 0 {
+            self.delay_timer = if ticks > self.delay_timer { 0 } else { self.delay_timer - ticks };
+        }
+        if self.sound_timer > 0 {
+            self.sound_timer = if ticks > self.sound_timer { 0 } else { self.sound_timer - ticks };
+        }
+    }
+
+
     pub fn cycle(&mut self) {
         let sixty_hertz = self.speed / TIMER_COUNTDOWN_RATE_PER_SECOND as u32;
         
@@ -119,7 +130,6 @@ impl Chip8 {
             
             let opcode = self.fetch_opcode();
             self.pointer += INSTRUCTION_SIZE;
-           
             self.execute_next(opcode);
         }
     }
@@ -160,18 +170,6 @@ impl Chip8 {
     }
 
     fn execute_next(&mut self, opcode: u16) {
-        /*
-        implemented:
-            00E0 (clear screen)
-            1NNN (jump)
-            6XNN (set register VX)
-            7XNN (add value to register VX)
-            ANNN (set index register I)
-            DXYN (display/draw)
-            00EE and 2NNN: Subroutines
-
-
-         */
         let first_nibble = (opcode >> 12) as u8;
         let second_nibble = ((opcode >> 8) & 0xF) as u8;
         let third_nibble = ((opcode >> 4) & 0xF) as u8;
@@ -190,7 +188,8 @@ impl Chip8 {
                     match byte_arg {
                         0xE0 => self.clear_screen(),
                         0xEE => self.pointer = self.stack.pop_back().unwrap(),
-                        _ => panic!("Unknown 0x0XXX opcode"),
+                        _ => {}
+                        // _ => panic!("Unknown 0x0XXX opcode"),
                     }
                 }
             },
@@ -244,7 +243,7 @@ impl Chip8 {
                         let vx = self.registers[x_register];
                         let vy = self.registers[y_register];
                         
-                        if vy <= vx {
+                        if vy < vx {
                             self.registers[0xF] = 1;
                         } else {
                             self.registers[0xF] = 0;
@@ -256,7 +255,7 @@ impl Chip8 {
                         let vx = self.registers[x_register];
                         let vy = self.registers[y_register];
                         
-                        if vx <= vy {
+                        if vx < vy {
                             self.registers[0xF] = 1;
                         } else {
                             self.registers[0xF] = 0;
@@ -266,14 +265,13 @@ impl Chip8 {
 
                     },
                     0x6 => {
-                        self.registers[x_register] = self.registers[y_register];
                         self.registers[0xF] = self.registers[x_register] & 1;
                         self.registers[x_register] >>= 1;
                     },
                     0xE => {
-                        self.registers[x_register] = self.registers[y_register];
-                        self.registers[0xF] = self.registers[x_register] & 1;
-                        self.registers[x_register] = self.registers[x_register].wrapping_shl(1);
+                        self.registers[0xF] = (self.registers[x_register] & 0b10000000) >> 7;
+                        self.registers[x_register] <<= 1;
+                        // self.registers[x_register] = self.registers[x_register].wrapping_shl(1);
                     },
                     _ => {}
                 }
@@ -292,8 +290,58 @@ impl Chip8 {
                 self.pointer = (long_byte_arg + self.registers[0] as u16) as usize;
             },
             0xC => {
-                self.registers[x_register] = (rand::thread_rng().gen_range(0..1024) | 0xFF) as u8;
+                self.registers[x_register] = (rand::thread_rng().gen_range(0..255) & byte_arg) as u8;
             },
+            0xE => {
+                match byte_arg {
+                    0x9E => {
+                        if self.keys[self.registers[x_register] as usize] == 1 {
+                            self.pointer += INSTRUCTION_SIZE;
+                        }
+                    },
+                    0xA1 => {
+                        if self.keys[self.registers[x_register] as usize] == 0 {
+                            self.pointer += INSTRUCTION_SIZE;
+                        }
+                    },
+                    _ => panic!("Unknown 0xEXXX opcode {}", opcode)
+                }
+            },
+            0xF => {
+                match byte_arg {
+                    // + timers
+                    0x07 => self.registers[x_register] = self.delay_timer,
+                    0x15 => self.delay_timer = self.registers[x_register],
+                    0x18 => self.sound_timer = self.registers[x_register],
+                    // - timers
+                    0x1E => self.i += self.registers[x_register] as usize,
+                    0x0A => {
+                        if let Some(pos) = self.keys.iter().position(|&k| k == 1) {
+                            self.registers[x_register] = pos as u8;
+                        } else {
+                            self.pointer -= INSTRUCTION_SIZE;
+                        }
+                    },
+                    0x29 => self.i = 0x50 + (self.registers[x_register] & 0xF) as usize * 5,
+                    0x33 => {
+                        let vx = self.registers[x_register];
+
+                        self.memory[self.i] = vx / 100;
+                        self.memory[self.i + 1] = (vx % 100) / 10;
+                        self.memory[self.i + 2] = vx % 10; 
+                    },
+                    0x55 => {
+                        for i in 0..x_register + 1 {
+                            self.memory[self.i + i] = self.registers[i];
+                        }
+                    },
+                    0x65 => {
+                        for i in 0..x_register + 1 {
+                            self.registers[i] = self.memory[self.i + i];
+                        }                    }
+                    _ => panic!("Unknown 0xFXXX opcode {}", opcode),
+                }
+            }
             0xD => {
                 self.draw(
                     self.registers[x_register] as usize,
