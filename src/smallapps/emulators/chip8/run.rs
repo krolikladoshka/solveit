@@ -129,7 +129,7 @@ impl Chip8Emulator {
 
 pub fn chip8_run() {
     let mut emulator = Chip8Emulator::new();
-    emulator.load_rom("tests/chip8-test-suite.ch8");
+    emulator.load_rom("tests/Tank.ch8");
 
     emulator.run();    
 }

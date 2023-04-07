@@ -1,7 +1,7 @@
 use leet::hard::makingalargeisland::Solution;
 mod leet;
 mod smallapps;
-use smallapps::emulators::chip8::run::chip8_run;
+use smallapps::emulators::{chip8::run::chip8_run, dendynes::dendy_run};
 
 fn main() {
     // let args = vec![
@@ -36,6 +36,6 @@ fn main() {
     //     println!("{}", result);
     //     // println!("{0}", Solution::network_delay_time(arg.0, arg.1, arg.2));
     // }
-
-    chip8_run();
+    dendy_run();
+    // chip8_run();
 }
