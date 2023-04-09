@@ -1,4 +1,6 @@
-use log::{warn, debug, error};
+use std::{rc::Rc, cell::RefCell};
+
+use log::{warn, debug, error, trace};
 
 use super::{ppu::PPU, cartridge::Cartridge, memory::accessing_mode::MemoryAccessMode};
 
@@ -62,11 +64,11 @@ pub struct Bus<'a> {
     pub cpu_memory: [u8; CPU_MEMORY_SIZE],
     pub cpu_cycles: usize,
     pub ppu: &'a mut PPU,
-    pub cartridge: &'a mut Cartridge,
+    pub cartridge: Rc<RefCell<Cartridge>>,
 }
 
 impl<'a> Bus<'a> {
-    pub fn new(ppu_device: &'a mut PPU, cartridge: &'a mut Cartridge) -> Self {
+    pub fn new(ppu_device: &'a mut PPU, cartridge: Rc<RefCell<Cartridge>>) -> Self {
         let mut bus = Bus {
             cpu_memory: [0; CPU_MEMORY_SIZE],
             cpu_cycles: 0,
@@ -85,7 +87,7 @@ impl<'a> Bus<'a> {
         return self.ppu.nmi_interrupt;
     }
 
-    pub fn read_memory_u8(&self, index: usize) -> u8 {
+    pub fn read_memory_u8(&mut self, index: usize) -> u8 {
         match index {
             CPU_RAM_PAGE_START..=CPU_RAM_PAGE_END => {
                 return self.cpu_memory[index & CPU_RAM_MIRROR_MASK];
@@ -104,7 +106,7 @@ impl<'a> Bus<'a> {
                 return self.ppu.read_status_register();
             },
             OAM_DATA_ADDRESS => {
-                return self.ppu.read_oam_register();
+                return self.ppu.read_oam_data_register();
             },
             PPU_DATA_ADDRESS => {
                 return self.ppu.read_data_register();
@@ -127,16 +129,15 @@ impl<'a> Bus<'a> {
 
                 return 0;
             },
-            // for now
             PROGRAM_ROM_PAGE_START..=PROGRAM_ROM_PAGE_END => {
                 debug!("Attempt to read program rom space {:X}", index);
                 
-                return self.cartridge.cpu_read_u8(index);
+                return self.cartridge.borrow().cpu_read_u8(index);
             },
             CARTRIDGE_PAGE_START..=CARTRIDGE_PAGE_END => {
                 warn!("Attempt to read unused cartridge (PRG ROM/RAM) space {:X}", index);
 
-                return self.cartridge.cpu_read_u8(index);
+                return self.cartridge.borrow().cpu_read_u8(index);
             },
             _ => {
                 panic!("Failed attempt to grab memory from {}", index);
@@ -144,7 +145,7 @@ impl<'a> Bus<'a> {
         }
     }
 
-    pub fn read_memory_u16(&self, index: usize) -> u16 {
+    pub fn read_memory_u16(&mut self, index: usize) -> u16 {
         return u16::from_le_bytes([
             self.read_memory_u8(index), 
             self.read_memory_u8(index + 1)
@@ -156,24 +157,50 @@ impl<'a> Bus<'a> {
             CPU_RAM_PAGE_START..=CPU_RAM_PAGE_END => {
                 self.cpu_memory[index & CPU_RAM_MIRROR_MASK] = value;
             },
-            PPU_CTRL_ADDRESS |
-            PPU_MASK_ADDRESS |
-            OAM_ADDRESS      |
-            PPU_SCROLL       |
-            PPU_ADDRESS      |
-            OAM_DMA_ADDRESS => {
-                warn!("Attempt to read temporary read-only area of PPU registers {:X}", index);
-                
-                // return 0;
+            PPU_CTRL_ADDRESS => {
+                self.ppu.write_control_register(value);
             },
-            PPU_STATUS_ADDRESS => {
-                // return self.ppu.read_status_register();
+            PPU_MASK_ADDRESS => {
+                self.ppu.write_mask_register(value);
+            },
+            OAM_ADDRESS => {
+                self.ppu.write_oam_address_register(value);
             },
             OAM_DATA_ADDRESS => {
-                // return self.ppu.read_oam_register();
+                self.ppu.write_oam_data_register(value);
+            },
+            PPU_SCROLL => {
+                self.ppu.write_scroll_register(value);
+            },
+            PPU_ADDRESS => {
+                self.ppu.write_address_register(value);
+            },
+            OAM_DMA_ADDRESS => {
+                let mut cycles = 0;
+                let start_address = (value as u16) << 8;
+                let end_address = ((value as u16) << 8) | 0x00FF; 
+                
+                cycles += 1;
+                self.tick(1f32);
+     
+                for address in start_address..=end_address {
+                    let value = self.read_memory_u8(address as usize);
+                    
+                    self.tick(1f32);
+                    cycles += 1;
+                    
+                    self.ppu.write_oam_dma_register_seq(value);
+                    
+                    self.tick(1f32);
+                    cycles += 1;
+                }
+                trace!("OAM DMA write took {} cycles", cycles);
+            },
+            PPU_STATUS_ADDRESS => {
+                warn!("Attempt to write to read-only ppu status register: {:X}; {:X}", index, value);
             },
             PPU_DATA_ADDRESS => {
-                // return self.ppu.read_data_register();
+                self.ppu.write_data_register(value);
             },
             IO_PAGE_START..=IO_PAGE_END => {
                 // return self.read_memory_u8(index & IO_MIRROR_MASK);

@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{path::Path, rc::Rc, cell::RefCell};
 use log::warn;
 use crate::smallapps::emulators::dendynes::logging::init_logger;
 
@@ -26,11 +26,15 @@ pub fn dendy_run() {
     let cartridge_path = "tests/roms/nestest.nes";
     let cartridge_path = current_file.parent().unwrap().join(cartridge_path);
 
-    let mut cartridge = Cartridge::new(cartridge_path.as_os_str().to_str().unwrap());
-    let mut ppu_device = PPU::new();
+    let mut cartridge = Rc::new(
+        RefCell::new(
+            Cartridge::new(cartridge_path.as_os_str().to_str().unwrap())
+        )
+    );
+    let mut ppu_device = PPU::new(cartridge.clone());
     
-    let mut bus = Bus::new(&mut ppu_device, &mut cartridge);
+    let mut bus = Bus::new(&mut ppu_device, cartridge.clone());
     let mut cpu = CPU::new(&mut bus);
-    
+
     cpu.run();
 }

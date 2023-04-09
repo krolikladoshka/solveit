@@ -47,6 +47,15 @@ bitflags! {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Mirroring {
+    Horizontal,
+    Vertical,
+    OneScreenLow,
+    OneScreenHigh,
+    FourScreen,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct Header {
     pub name: [u8; HEADER_NAME_SIZE],
@@ -56,30 +65,6 @@ pub struct Header {
     pub prg_ram_size: u8,
     pub mapper_id: u8,
 }
-
-// impl Clone for Header {
-//     fn clone(&self) -> Self {
-//         return Header {
-//             name: self.name.clone(),
-//             prg_banks_count: self.prg_banks_count.clone(),
-//             chr_banks_count: self.chr_banks_count.clone(),
-//             mapper_flags: CartridgeMapperFlags::from_bits(self.mapper_flags.bits().clone()).unwrap(),
-//             prg_ram_size: self.prg_ram_size.clone(),
-//             mapper_id: self.mapper_id.clone(),
-//         };
-//     }
-
-//     fn clone_from(&mut self, source: &Self) {
-//         self.name = source.name.clone();
-//         self.prg_banks_count = source.prg_banks_count.clone();
-//         self.chr_banks_count = source.chr_banks_count.clone();
-//         self.mapper_flags = CartridgeMapperFlags::from_bits(source.mapper_flags.bits().clone()).unwrap();
-//         self.prg_ram_size = source.prg_ram_size.clone();
-//         self.mapper_id = source.mapper_id.clone();
-//     }
-// }
-
-// impl Copy for Header {}
 
 
 pub struct Cartridge {
@@ -93,6 +78,7 @@ pub struct Cartridge {
     pub prg_banks_count: u8,
     pub chr_banks_count: u8,
     pub mapper: Box<dyn Mapper>,
+    pub mirroring: Mirroring,
 }
 
 impl Cartridge {
