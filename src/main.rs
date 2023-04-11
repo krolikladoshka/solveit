@@ -1,7 +1,6 @@
-use leet::hard::makingalargeisland::Solution;
 mod leet;
 mod smallapps;
-use smallapps::emulators::{chip8::run::chip8_run, dendynes::dendy_run};
+use smallapps::emulators::{dendynes::dendy_run};
 
 fn main() {
     // let args = vec![

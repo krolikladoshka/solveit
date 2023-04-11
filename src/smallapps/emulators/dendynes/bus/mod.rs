@@ -62,7 +62,7 @@ const PROGRAM_ROM_PAGE_END: usize = 0xFFFF;
 
 pub struct Bus<'a> {
     pub cpu_memory: [u8; CPU_MEMORY_SIZE],
-    pub cpu_cycles: usize,
+    pub cpu_cycles: f32,
     pub ppu: &'a mut PPU,
     pub cartridge: Rc<RefCell<Cartridge>>,
 }
@@ -71,7 +71,7 @@ impl<'a> Bus<'a> {
     pub fn new(ppu_device: &'a mut PPU, cartridge: Rc<RefCell<Cartridge>>) -> Self {
         let mut bus = Bus {
             cpu_memory: [0; CPU_MEMORY_SIZE],
-            cpu_cycles: 0,
+            cpu_cycles: 0f32,
             ppu: ppu_device,
             cartridge: cartridge,
         };
@@ -85,6 +85,10 @@ impl<'a> Bus<'a> {
 
     pub fn poll_nmi_interrupt(&mut self) -> bool {
         return self.ppu.nmi_interrupt;
+    }
+
+    pub fn nmi_handled(&mut self) {
+        self.ppu.nmi_interrupt = false;
     }
 
     pub fn read_memory_u8(&mut self, index: usize) -> u8 {
@@ -240,9 +244,12 @@ impl<'a> Bus<'a> {
     }
 
     pub fn tick(&mut self, cycles: f32) {
-        self.cpu_cycles += cycles as usize;
+        self.cpu_cycles += cycles;
         // thrice the speed of cpu
-        self.ppu.tick((cycles * 3f32).round() as usize);
+        for _ in 0..((cycles * 3f32).round() as usize) {
+            self.ppu.tick();
+        }
+        // self.ppu.tick( as usize);
         // two times slower than cpu
         // self.apu.tick(cycles);
     }

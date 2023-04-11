@@ -2,7 +2,7 @@ use bitflags::bitflags;
 use log::{warn, debug, info, trace, error};
 use num_traits::FromPrimitive;
 
-use crate::smallapps::emulators::dendynes::{bus::Bus, memory::{accessing_mode::MemoryAccessMode, self}};
+use crate::smallapps::emulators::dendynes::{bus::Bus, memory::{accessing_mode::MemoryAccessMode}};
 
 use super::opcode::{OpcodeType, OPCODES_MAP, Opcode};
 
@@ -10,12 +10,10 @@ const PROGRAM_POINTER_START: usize = 0xC000;
 const STACK_PAGE_START: usize = 0x100;
 
 const STACK_POINTER_START: usize = 0xFD;
-const INDEX_REGISTERS_START: u8 = 0x0;
 const RESET_PROGRAM_POINTER_ADDRESS: usize = 0xFFFC;
 const PAGE_CROSSING_CYCLES: f32 = 1f32;
 
 bitflags! {
-    // #[derive(Debug)]
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct StatusFlags: u8 {
         const CARRY             = 0b00000001;
@@ -34,7 +32,7 @@ pub struct CPU<'a> {
 
     pub stack_pointer: u8,
 
-    pub cycles: usize,
+    pub cycles: u128,
 
     pub register_a: u8,
     pub register_x: u8,
@@ -96,7 +94,8 @@ impl<'a> CPU<'a> {
             status: StatusFlags::from_bits(0x24).unwrap(),
             bus: bus,
         };
-        cpu.bus.tick(7f32);
+        cpu.reset();
+        // cpu.bus.tick(7f32);
 
         return cpu;
     }
@@ -109,17 +108,17 @@ impl<'a> CPU<'a> {
         self.stack_pointer = STACK_POINTER_START as u8;
 
         debug!("Reading program start address from {:X}", RESET_PROGRAM_POINTER_ADDRESS);
-        // self.program_pointer = self.bus.read_memory_u16(RESET_PROGRAM_POINTER_ADDRESS) as usize;
+        self.program_pointer = self.bus.read_memory_u16(RESET_PROGRAM_POINTER_ADDRESS) as usize;
 
-        self.program_pointer = PROGRAM_POINTER_START;
+        // self.program_pointer = PROGRAM_POINTER_START;
         self.status = StatusFlags::empty();
         self.set_unused_status();
         // self.set_interrupt_disable_status();
         
-        // trace!("CPU dump after reset: PC-{:X} | A:{:X} X:{:X} Y:{:X} P:{:X} SP:{:X};  Status: {:?}",
-        //     self.program_pointer, self.register_a, self.register_x, self.register_y,
-        //     self.status.bits(), self.stack_pointer, self.status
-        // );
+        trace!("CPU dump after reset: PC-{:X} | A:{:X} X:{:X} Y:{:X} P:{:X} SP:{:X};  Status: {:?}",
+            self.program_pointer, self.register_a, self.register_x, self.register_y,
+            self.status.bits(), self.stack_pointer, self.status
+        );
         
         self.bus.tick(8f32);
     }
@@ -133,26 +132,21 @@ impl<'a> CPU<'a> {
             },
             MemoryAccessMode::Immediate => {
                 return index;
-                // return Some(self.bus.read_memory_u8(index));
             },
             MemoryAccessMode::Accumulator => {
                 return self.register_a as u16;
-                // return Some(self.bus.read_memory_u8(self.register_a));
             },
             MemoryAccessMode::ZeroPage => {
                 let address = self.bus.read_memory_u8(index as usize);
                 return (address & 0xFF) as u16;
-                // return Some(self.bus.read_memory_u8(index & 0xFF));
             },
             MemoryAccessMode::ZeroPageX => {
                 let address = self.bus.read_memory_u8(index as usize).wrapping_add(self.register_x);
                 return (address & 0xFF) as u16;
-                // return Some(self.bus.read_memory_u8(address as usize));
             },
             MemoryAccessMode::ZeroPageY => {
                 let address = self.bus.read_memory_u8(index as usize).wrapping_add(self.register_y);
                 return (address & 0xFF) as u16;
-                // return Some(self.bus.read_memory_u8(address as usize));
             },
             MemoryAccessMode::Relative(crossing_page) => {
                 let mut address = self.bus.read_memory_u8(index as usize) as u16;
@@ -166,7 +160,6 @@ impl<'a> CPU<'a> {
             MemoryAccessMode::Absolute => {
                 let address = self.bus.read_memory_u16(index as usize);
                 return address;
-                // return Some(self.bus.read_memory_u8(address));
             },
             MemoryAccessMode::AbsoluteX(crossing_page) => {
                 let address = self.bus.read_memory_u16(index as usize);
@@ -295,12 +288,17 @@ impl<'a> CPU<'a> {
         // self.reset();
     
         loop {
-            if self.bus.poll_nmi_interrupt() {
-                self.interrupt(interrupts::NMI);
-            }
-            
-            self.execute_opcode();
+            self.cpu_step();
         }
+    }
+
+    pub fn cpu_step(&mut self) -> f32 {
+        if self.bus.poll_nmi_interrupt() {
+            self.interrupt(interrupts::NMI);
+            self.bus.nmi_handled();
+        }
+        
+        return self.execute_opcode();
     }
 
     fn trace_state(&mut self) {
@@ -328,7 +326,13 @@ impl<'a> CPU<'a> {
                     self.program_pointer, opcode_raw, low, high,
                     self.register_a, self.register_x, self.register_y,
                     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles,
-                )
+                );
+                // info!(
+                //     "{:04X}  {:02X} {: <02X} {: <02X}  A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} CYC:{}",
+                //     self.program_pointer, opcode_raw, low, high,
+                //     self.register_a, self.register_x, self.register_y,
+                //     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles,
+                // );
             },
             MemoryAccessMode::Immediate | MemoryAccessMode::ZeroPage | MemoryAccessMode::ZeroPageX |
             MemoryAccessMode::ZeroPageY | MemoryAccessMode::Relative(_) | MemoryAccessMode::IndirectX |
@@ -340,7 +344,13 @@ impl<'a> CPU<'a> {
                     self.program_pointer, opcode_raw, arg,
                     self.register_a, self.register_x, self.register_y,
                     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles
-                )
+                );
+                // info!(
+                //     "{:04X}  {:02X} {: <02X}     A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} CYC:{}",
+                //     self.program_pointer, opcode_raw, arg,
+                //     self.register_a, self.register_x, self.register_y,
+                //     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles
+                // );
             },
             MemoryAccessMode::Implied | MemoryAccessMode::Accumulator => {
                 trace!(
@@ -348,20 +358,23 @@ impl<'a> CPU<'a> {
                     self.program_pointer, opcode_raw,
                     self.register_a, self.register_x, self.register_y,
                     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles
-                )
+                );
+                // info!(
+                //     "{:04X}  {:02X}        A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} CYC:{}",
+                //     self.program_pointer, opcode_raw,
+                //     self.register_a, self.register_x, self.register_y,
+                //     self.status.bits(), self.stack_pointer, self.bus.cpu_cycles
+                // );
             }
         };
-        // trace!(
-        //     "{:04X} {:02X} {: <02X} {: <02X} | A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}",
-        //     self.program_pointer, opcode_raw, low, high,
-        //     self.register_a, self.register_x, self.register_y,
-        //     self.status.bits(), self.stack_pointer
-        // )
     }
 
-    pub fn execute_opcode(&mut self) {
+    pub fn execute_opcode(&mut self) -> f32 {
         debug!("!! Execute opcode start !!");
+        trace!("!!!Program Pointer: {:04X}", self.program_pointer);
 
+        let cycles = self.bus.cpu_cycles;
+        
         self.trace_state();
         
         let opcode = self.bus.read_memory_u8(self.program_pointer);
@@ -376,7 +389,7 @@ impl<'a> CPU<'a> {
             self.program_pointer, opcode, self.register_a, self.register_x, self.register_y,
             self.status.bits(), self.stack_pointer, self.status,
         );
-        info!("Executing converted opcode {:?}; pc {:X}", opcode, self.program_pointer);
+        debug!("Executing converted opcode {:?}; pc {:X}", opcode, self.program_pointer);
         self.program_pointer += 1;
         debug!("Advanced PC {:X}", self.program_pointer);
         
@@ -633,16 +646,21 @@ impl<'a> CPU<'a> {
             }
             _ => panic!("Unknown opcode {:?}", opcode),
         }
-        
+
+        self.cycles += opcode_metadata.cycles as u128; 
         self.bus.tick(opcode_metadata.cycles as f32);
         
         if program_pointer != self.program_pointer {
-            info!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
+            trace!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
+            debug!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
         } else {
-            info!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
+            trace!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
+            debug!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
             self.program_pointer += (opcode_metadata.length - 1) as usize;
 
         }
+
+        return self.bus.cpu_cycles - cycles;;
     }
 
     pub fn set_carry_status(&mut self) {
@@ -789,6 +807,7 @@ impl<'a> CPU<'a> {
     }
 
     pub fn interrupt(&mut self, interrupt: interrupts::CpuInterrupt) {
+        debug!("Interrupt {:?}; pushing PC {:04X}", interrupt, self.program_pointer);
         self.push_stack_u16(self.program_pointer as u16);
                 
         if interrupt.interrupt_type == interrupts::InterruptType::BRK {
@@ -803,6 +822,8 @@ impl<'a> CPU<'a> {
         self.bus.tick(interrupt.cycles);
 
         self.program_pointer = self.bus.read_memory_u16(interrupt.vector_addr as usize) as usize;
+
+        debug!("End Interrupt {:?}; new PC {:04X}", interrupt, self.program_pointer);
     }
 
     fn brk(&mut self) {
@@ -904,15 +925,6 @@ impl<'a> CPU<'a> {
     }
     
     fn ldx(&mut self, memory_mode: MemoryAccessMode) {
-        // // if opcode_metadata.memory_mode == MemoryAccessMode::Absolute {
-        //     let addr = self.get_opcode_data_address(self.program_pointer, opcode_metadata.memory_mode, false);
-        //     let value = self.read_for_trace(self.program_pointer, memory_mode);
-        //     let try_read = self.bus.read_memory_u8(addr as usize);
-        //     trace!(
-        //         "LDX ABSOLUTE: ADDR {:04X}; DATA {:02X}; TRY READ {:02X}; {:?}",
-        //         addr, value, try_read, opcode_metadata.memory_mode
-        //     );
-        // // }
         let opcode_data = self.read_opcode_data(self.program_pointer, memory_mode);
 
         self.set_register_x(opcode_data);
@@ -1186,7 +1198,7 @@ impl<'a> CPU<'a> {
 
     fn branch(&mut self, condition: bool, memory_mode: MemoryAccessMode) {
         if condition {
-            info!("Branched {:?}", memory_mode);
+            debug!("Branched {:?}", memory_mode);
 
             self.bus.tick(1f32);
             
@@ -1204,7 +1216,7 @@ impl<'a> CPU<'a> {
             self.cross_page(program_pointer, jump_address);
             self.program_pointer = jump_address as usize;
         } else {
-            info!("Unsuccessfull branch");
+            debug!("Unsuccessfull branch");
         }
     }
 
@@ -1217,7 +1229,7 @@ impl<'a> CPU<'a> {
             self.program_pointer, memory_mode, true
         );
     
-        info!("Carefully jumping from {:X} to {:X}, metadata {:?}", self.program_pointer, address, memory_mode);
+        debug!("Carefully jumping from {:X} to {:X}, metadata {:?}", self.program_pointer, address, memory_mode);
     
         self.program_pointer = address as usize;
     }
@@ -1246,7 +1258,7 @@ impl<'a> CPU<'a> {
     fn rts(&mut self, memory_mode: MemoryAccessMode) {
         let recovered_counter = self.pop_stack_u16();
         
-        info!("Carefully returning from subroutine; setting PC from {:X} to {:X}", self.program_pointer, recovered_counter.wrapping_add(1));
+        debug!("Carefully returning from subroutine; setting PC from {:X} to {:X}", self.program_pointer, recovered_counter.wrapping_add(1));
         
         self.program_pointer = recovered_counter.wrapping_add(1) as usize;
     }

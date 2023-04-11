@@ -64,6 +64,7 @@ pub struct Header {
     pub mapper_flags: CartridgeMapperFlags,
     pub prg_ram_size: u8,
     pub mapper_id: u8,
+    pub mirroring: Mirroring,
 }
 
 
@@ -106,6 +107,16 @@ impl Cartridge {
             mapper_flags_byte & BIT_FLAGS_MASK
         ).unwrap();
 
+        let mut mirroring: Mirroring;
+
+        if cartridge_mapper_flags.contains(CartridgeMapperFlags::FOUR_SCREEN) {
+            mirroring = Mirroring::FourScreen;
+        } else if cartridge_mapper_flags.contains(CartridgeMapperFlags::MIRRORING) {
+            mirroring = Mirroring::Vertical;
+        } else {
+            mirroring = Mirroring::Horizontal;
+        }
+
         let (data, mapper_flags_2_byte) = be_u8(data)?;
 
         if (mapper_flags_2_byte & DETECT_NES2_FORMAT_MASK) >> 2 == 2 {
@@ -134,6 +145,7 @@ impl Cartridge {
             mapper_flags: cartridge_mapper_flags,
             prg_ram_size: prg_ram_size,
             mapper_id: mapper,
+            mirroring: mirroring,
         };
         info!("Parsed cartridge header {:?}", header);
 
@@ -178,6 +190,7 @@ impl Cartridge {
             prg_banks_count: header.prg_banks_count,
             chr_banks_count: header.chr_banks_count,
             mapper: mapper,
+            mirroring: header.mirroring,
         };
 
         return rom;

@@ -16,6 +16,8 @@ pub trait Mapper {
     fn map_ppu_write(&mut self, index: usize, value: u8) -> usize {
         return index;
     }
+
+    fn scanline(&mut self) {}
 }
 
 mod nrom_mapper {
@@ -23,15 +25,18 @@ mod nrom_mapper {
 
     pub const FIRST_PAGE_START: usize = 0x8000;
     pub const BANK_PAGE_SIZE: usize = 0x4000;
+    pub const CHR_BANK_PAGE_SIZE: usize = 0x2000;
 
     pub struct NROMMapper {
         pub prg_banks_count: u8,
+        pub chr_banks_count: u8,
     }
     
     impl NROMMapper {
         pub fn new(settings: Header) -> Self {
             let mut mapper = NROMMapper {
                 prg_banks_count: settings.prg_banks_count,
+                chr_banks_count: settings.chr_banks_count,
             };
     
             return mapper;
@@ -51,7 +56,23 @@ impl Mapper for nrom_mapper::NROMMapper {
     }
 
     fn map_ppu_read(&self, index: usize) -> usize {
-        return index;
+        if self.chr_banks_count > 1 {
+            let memory_span = nrom_mapper::CHR_BANK_PAGE_SIZE * self.chr_banks_count as usize;
+            
+            return index & (memory_span & 1); 
+        } else {
+            return index & (nrom_mapper::CHR_BANK_PAGE_SIZE - 1);
+        }
+    }
+
+    fn map_ppu_write(&mut self, index: usize, value: u8) -> usize {
+        if self.chr_banks_count > 1 {
+            let memory_span = nrom_mapper::CHR_BANK_PAGE_SIZE * self.chr_banks_count as usize;
+            
+            return index & (memory_span & 1); 
+        } else {
+            return index & (nrom_mapper::CHR_BANK_PAGE_SIZE - 1);
+        }
     }
 }
 

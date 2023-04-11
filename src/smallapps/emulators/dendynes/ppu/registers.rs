@@ -10,14 +10,14 @@ pub const PPU_ADDRESS_MIRROR_MASK: u16 = 0x3FFF;
 bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
     pub struct Controller: u8 {
-        const NAMETABLE1                = 0b00000001;
-        const NAMETABLE2                = 0b00000010;
-        const VRAM_ADDRESS_INCREMENT    = 0b00000100;
-        const SPRITE_PATTERN_ADDRESS    = 0b00001000;
-        const BACKROUND_PATTERN_ADDRESS = 0b00010000;
-        const SPRITE_SIZE               = 0b00100000;
-        const MASTER_SLAVE_SELECT       = 0b01000000;
-        const GENERATE_NMI              = 0b10000000;
+        const NAMETABLE_X                = 0b00000001;
+        const NAMETABLE_Y                = 0b00000010;
+        const VRAM_ADDRESS_INCREMENT     = 0b00000100;
+        const SPRITE_PATTERN_ADDRESS     = 0b00001000;
+        const BACKROUND_PATTERN_ADDRESS  = 0b00010000;
+        const SPRITE_SIZE                = 0b00100000;
+        const MASTER_SLAVE_SELECT        = 0b01000000;
+        const GENERATE_NMI               = 0b10000000;
     }
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -45,6 +45,153 @@ bitflags! {
     }
 }
 
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct LoopyRegister {
+    coarse_x: u8,
+    coarse_y: u8, 
+    pub nametable_x: u8,
+    pub nametable_y: u8,
+    fine_y: u8,
+}
+
+impl LoopyRegister {
+    pub fn new() -> Self {
+        return LoopyRegister {
+            coarse_x: 0,
+            coarse_y: 0,
+            nametable_x: 0,
+            nametable_y: 0,
+            fine_y: 0,
+        };
+    }
+
+    pub fn flip_nametable_x(&mut self) {
+        if self.nametable_x == 1 {
+            self.nametable_x = 0;
+        } else {
+            self.nametable_x = 1;
+        }
+    }
+
+    pub fn flip_nametable_y(&mut self) {
+        if self.nametable_y == 1 {
+            self.nametable_y = 0;
+        } else {
+            self.nametable_y = 1;
+        }
+    }
+
+    pub fn increment_coarse_x(&mut self) {
+        if self.coarse_x() == 31 {
+            self.set_coarse_x(0);
+            self.flip_nametable_x();
+        } else {
+            self.set_coarse_x(self.coarse_x() + 1);
+        }
+    }
+
+    pub fn increment_coarse_y(&mut self) {
+        if self.fine_y() < 7 {
+            self.set_fine_y(self.fine_y + 1);
+        } else {
+            self.set_fine_y(0);
+
+            if self.coarse_y() == 29 {
+                self.set_coarse_y(0);
+                self.flip_nametable_y();
+            } else if self.coarse_y() == 31 {
+                self.set_coarse_y(0);
+            } else {
+                self.set_coarse_y(self.coarse_y() + 1);
+            }
+        }
+    }
+
+    pub fn set_coarse_x(&mut self, value: u8) {
+        self.coarse_x = value;
+    }
+
+    pub fn set_coarse_y(&mut self, value: u8) {
+        self.coarse_y = value;
+    }
+
+    pub fn coarse_x(&self) -> u8 {
+        return self.coarse_x & 0b11111;
+    }
+    
+    pub fn coarse_y(&self) -> u8 {
+        return self.coarse_y & 0b11111;
+    }
+
+    pub fn fine_y(&self) -> u8 {
+        return self.fine_y & 0b111;
+    }
+
+    pub fn set_fine_y(&mut self, value: u8) {
+        self.fine_y = value & 0b111;
+    }
+
+    pub fn address(&self) -> u16 {
+        return ((self.fine_y() as u16) << 12) |
+               ((self.nametable_y as u16) << 11) |
+               ((self.nametable_x as u16) << 10) |
+               ((self.coarse_y() as u16) << 5) |
+               self.coarse_x() as u16;
+    }
+
+    pub fn vram_address(&self) -> u16 {
+        return self.address() & 0xFFF;
+    }
+
+    pub fn next_tile_attribute_address(&self) -> u16 {
+        return ((self.nametable_y as u16) << 11) |
+               ((self.nametable_x as u16) << 10) |
+               (((self.coarse_y() as u16) >> 2) << 3) |
+               ((self.coarse_x() as u16) >> 2);
+    }
+
+    pub fn transfer_from(&mut self, other: &Self) {
+        self.coarse_x = other.coarse_x;
+        self.coarse_y = other.coarse_y;
+        self.nametable_x = other.nametable_x;
+        self.nametable_y = other.nametable_y;
+        self.fine_y = other.fine_y;
+    }
+
+    pub fn transfer_x_from(&mut self, other: &Self) {
+        self.nametable_x = other.nametable_x;
+        self.coarse_x = other.coarse_x;
+    }
+
+    pub fn transfer_y_from(&mut self, other: &Self) {
+        self.fine_y = other.fine_y;
+        self.nametable_y = other.nametable_y;
+        self.coarse_y = other.coarse_y;
+    }
+
+    pub fn set(&mut self, value: u16) {
+        self.coarse_x = (value & 0b11111) as u8;
+        self.coarse_y = ((value >> 5) & 0b11111) as u8;
+        self.nametable_x = ((value >> 10) & 1) as u8;
+        self.nametable_y = ((value >> 11) & 1) as u8;
+        self.fine_y = ((value >> 12) & 0b111) as u8;
+    }
+
+    pub fn increment(&mut self, vertical_mode: bool) {
+        let mut new_address = self.address();
+
+        if vertical_mode {
+            new_address = new_address.wrapping_add(VRAM_ADDRESS_INC_VERTICAL_MODE);
+        } else {
+            new_address = new_address.wrapping_add(VRAM_ADDRESS_INC);
+        }
+
+        self.set(new_address);
+    }
+}
+
+
 impl Status {
     pub fn read(&mut self, open_bus: u8) -> u8 {
         let result = self.bits() | (open_bus & OPEN_BUS_REGISTER_MASK);
@@ -53,67 +200,24 @@ impl Status {
 
         return result;
     }
-}
 
-pub struct PPUAddress {
-    pub low: u8, 
-    pub high: u8,
-}
-
-pub struct Scroll {
-    pub x: u8,
-    pub y: u8,
-}
-
-impl PPUAddress {
-    pub fn new() -> Self {
-        return PPUAddress { low: 0, high: 0 };
-    }
-
-    pub fn set(&mut self, value: u16) {
-        [self.low, self.high] = u16::to_le_bytes(value);
-    }
-
-    pub fn get(&self) -> u16 { 
-        return u16::from_le_bytes([
-            self.low,
-            self.high,
-        ]);
-    }
-
-    pub fn write(&mut self, byte: u8, latch: bool) {
-        if !latch {
-            self.high = byte;
-        } else {
-            self.low = byte;
-        }
-    }
-
-    pub fn increment(&mut self, vertical_mode: bool) {
-        let mut value = self.get();
-
-        if vertical_mode {
-            value += VRAM_ADDRESS_INC_VERTICAL_MODE;
-        } else {
-            value += VRAM_ADDRESS_INC;
-        }
-
-        value &= PPU_ADDRESS_MIRROR_MASK;
-
-        self.set(value);
+    pub fn reset(&mut self) {
+        self.remove(Status::SPRITE_OVERFLOW);
+        self.remove(Status::SPRITE_ZERO_HIT);
+        self.remove(Status::VERTICAL_BLANK);
     }
 }
 
-impl Scroll {
-    pub fn new() -> Self {
-        return Scroll { x: 0, y: 0 };
+impl Mask {
+    pub fn is_render_enabled(&self) -> bool {
+        return self.is_background_enabled() || self.is_sprites_enabled();
+    }
+    
+    pub fn is_background_enabled(&self) -> bool {
+        return self.contains(Mask::SHOW_BACKGROUND);
     }
 
-    pub fn write(&mut self, byte: u8, latch: bool) {
-        if !latch {
-            self.x = byte;
-        } else {
-            self.y = byte;
-        }
+    pub fn is_sprites_enabled(&self) -> bool {
+        return self.contains(Mask::SHOW_SPRITES);
     }
 }
