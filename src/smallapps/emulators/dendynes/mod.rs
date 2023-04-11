@@ -3,7 +3,7 @@ use std::{path::Path, rc::Rc, cell::RefCell, borrow::{BorrowMut, Borrow}, time::
 use graphics::{image, Transformed};
 use ::image::{ImageBuffer, RgbImage, RgbaImage};
 use log::warn;
-use piston::{WindowSettings, Event, Loop};
+use piston::{WindowSettings, Event, Loop, EventLoop, EventSettings};
 use piston_window::{PistonWindow, Texture, TextureSettings};
 use crate::smallapps::emulators::dendynes::{logging::init_logger, ppu::{CYCLES_TO_DRAW_SCANLINE, SCANLINES_PER_FRAME, SCANLINES_COUNT, SCREEN_WIDTH, SCREEN_HEIGHT, PALETTE}};
 
@@ -39,8 +39,8 @@ pub fn dendy_run() {
 
     let current_file = Path::new(file!());
 
-    // let cartridge_path = "tests/roms/donkey kong.nes";
-    let cartridge_path = "tests/roms/nestest.nes";
+    let cartridge_path = "tests/roms/donkey kong.nes";
+    // let cartridge_path = "tests/roms/nestest.nes";
     let cartridge_path = current_file.parent().unwrap().join(cartridge_path);
 
     let mut cartridge = Rc::new(
@@ -60,6 +60,11 @@ pub fn dendy_run() {
     ).exit_on_esc(true)
      .build()
      .unwrap();
+    
+    let mut event_settings = EventSettings::new();
+    event_settings.ups = 60;
+    window.set_event_settings(event_settings);
+
     let cpu_cycles_for_frame = CYCLES_TO_DRAW_SCANLINE * (SCANLINES_COUNT as usize);
     let cpu_cycles_for_frame = ((cpu_cycles_for_frame as f32) / 3f32).round() as usize;
 
@@ -87,9 +92,12 @@ pub fn dendy_run() {
             },
             Event::Loop(kind) => {
                 match kind {
+                    Loop::Idle(args) => {
+                        println!("Idling {}", args.dt);
+                    },
                     Loop::Update(args) => {
-                        let cycles_per_update = ((cpu_cycles_for_frame as f64) * args.dt).round() as usize;
-
+                        // let cycles_per_update = ((cpu_cycles_for_frame as f64) * args.dt).round() as usize;
+                        let cycles_per_update = (cpu_cycles_for_frame);
                         let start = SystemTime::now();
                         clock_cpu(cpu.borrow_mut(), cycles_per_update);
                         let end = SystemTime::now();

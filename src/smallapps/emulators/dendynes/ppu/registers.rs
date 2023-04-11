@@ -210,14 +210,14 @@ impl Status {
 
 impl Mask {
     pub fn is_render_enabled(&self) -> bool {
-        return self.is_background_enabled() || self.is_sprites_enabled();
+        return self.is_background_enabled() || self.is_foreground_enabled();
     }
     
     pub fn is_background_enabled(&self) -> bool {
         return self.contains(Mask::SHOW_BACKGROUND);
     }
 
-    pub fn is_sprites_enabled(&self) -> bool {
+    pub fn is_foreground_enabled(&self) -> bool {
         return self.contains(Mask::SHOW_SPRITES);
     }
 }

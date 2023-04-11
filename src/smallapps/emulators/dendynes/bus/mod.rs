@@ -184,9 +184,11 @@ impl<'a> Bus<'a> {
                 let start_address = (value as u16) << 8;
                 let end_address = ((value as u16) << 8) | 0x00FF; 
                 
-                cycles += 1;
-                self.tick(1f32);
-     
+                if self.cpu_cycles.round() as usize % 2 == 1 {
+                    cycles += 1;
+                    self.tick(1f32);
+                }
+
                 for address in start_address..=end_address {
                     let value = self.read_memory_u8(address as usize);
                     

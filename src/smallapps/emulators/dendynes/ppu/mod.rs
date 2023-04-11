@@ -1,10 +1,12 @@
 pub mod registers;
+pub mod oam;
 
+use core::panic;
 use std::{cell::RefCell, rc::Rc};
 
 use log::{warn, error, debug};
 
-use self::registers::{Controller, Mask, Status, Scroll, LoopyRegister};
+use self::{registers::{Controller, Mask, Status, LoopyRegister}, oam::OamSprite};
 
 use super::cartridge::{Cartridge, Mirroring};
 
@@ -28,8 +30,11 @@ pub const PALETTE_PAGE_END: u16 = 0x3FFF;
 pub const PALETTE_INTERNAL_MIRRORS: [usize; 4] = [
     0x10, 0x14, 0x18, 0x1C,
 ];
+pub const MAX_SPRITES_COUNT: usize = 8;
 
 pub const NAMETABLE_MIRROR_MASK: u16 = 0xFFF;
+
+pub const OAM_SPRITES_COUNT: usize = 64;
 
 pub const SCREEN_WIDTH: usize = 256;
 pub const SCREEN_HEIGHT: usize = 240;
@@ -125,7 +130,13 @@ pub struct PPU {
     background_shifter_pattern_high: u16,
     background_shifter_attribute_low: u16,
     background_shifter_attribute_high: u16,
-    
+
+    sprites_count: u8,
+    sprite_shifter_pattern_low: [u8; MAX_SPRITES_COUNT],
+    sprite_shifter_pattern_high: [u8; MAX_SPRITES_COUNT],
+    oam_sprites: [OamSprite; OAM_SPRITES_COUNT],
+    scanline_sprites: [OamSprite; MAX_SPRITES_COUNT],
+
     pub screen: [[u8; SCREEN_WIDTH]; SCREEN_HEIGHT],
 
     pub data_buffer: u8, 
@@ -160,6 +171,7 @@ impl PPU {
             oam_data_register: 0,
             address_register: LoopyRegister::new(),
             temp_address_register: LoopyRegister::new(),
+            //
             fine_x: 0,
             next_background_tile_id: 0,
             next_background_tile_attribute: 0,
@@ -169,6 +181,13 @@ impl PPU {
             background_shifter_pattern_high: 0,
             background_shifter_attribute_low: 0,
             background_shifter_attribute_high: 0,
+            //
+            sprites_count: 0,
+            sprite_shifter_pattern_low: [0; MAX_SPRITES_COUNT],
+            sprite_shifter_pattern_high: [0; MAX_SPRITES_COUNT],
+            oam_sprites: [OamSprite::new_empty(); OAM_SPRITES_COUNT],
+            scanline_sprites: [OamSprite::new_empty(); MAX_SPRITES_COUNT],
+            //
             screen: [[0; SCREEN_WIDTH]; SCREEN_HEIGHT],
             data_buffer: 0,
             memory: [0; PPU_MEMORY_SIZE],
@@ -221,8 +240,24 @@ impl PPU {
         return result;
     }
 
+    fn get_sprite_index(&self) -> usize {
+        return (self.oam_address_register / 4) as usize;
+    }
+
+    fn get_oam_data_value(&self) -> u8 {
+        let index = self.get_sprite_index();
+
+        return self.oam_sprites[index].get_attribute_by_address(self.oam_address_register);
+    }
+
+    fn set_oam_data_value(&mut self, value: u8) {
+        let index = self.get_sprite_index();
+
+        self.oam_sprites[index].set_attribute_by_address(self.oam_address_register, value);
+    }
+
     pub fn read_oam_data_register(&self) -> u8 {
-        return self.oam_data[self.oam_address_register as usize];
+        return self.get_oam_data_value();
     }
 
     pub fn read_data_register(&mut self) -> u8 {
@@ -267,8 +302,7 @@ impl PPU {
     }
 
     pub fn write_oam_data_register(&mut self, value: u8) {
-        self.oam_data_register = value;
-        self.oam_data[self.oam_address_register as usize] = value;
+        self.set_oam_data_value(value);
         self.oam_address_register = self.oam_address_register.wrapping_add(1);
     }
 
@@ -494,10 +528,13 @@ impl PPU {
 
     fn new_frame_reset(&mut self) {
         self.status_register.reset();
-        // shifters
+
+        for i in 0..MAX_SPRITES_COUNT {
+            self.scanline_sprites[i] = OamSprite::new_empty();
+        }
     }
 
-    fn update_sprite_shifters(&mut self) {
+    fn update_background_shifters(&mut self) {
         if self.mask_register.is_background_enabled() {
             self.background_shifter_pattern_low = self.background_shifter_pattern_low.wrapping_shl(1);
             self.background_shifter_pattern_high = self.background_shifter_pattern_high.wrapping_shl(1);
@@ -505,6 +542,24 @@ impl PPU {
             self.background_shifter_attribute_low = self.background_shifter_attribute_low.wrapping_shl(1);
             self.background_shifter_attribute_high = self.background_shifter_attribute_high.wrapping_shl(1);
         }
+    }
+
+    fn update_foreground_shifters(&mut self) {
+        if self.mask_register.is_foreground_enabled() && self.cycles >= 1 && self.cycles <= 257 {
+            for i in 0..(self.sprites_count as usize){
+                if self.scanline_sprites[i].x > 0 {
+                    self.scanline_sprites[i].x -= 1;
+                } else {
+                    self.sprite_shifter_pattern_low[i] = self.sprite_shifter_pattern_low[i].wrapping_shl(1);
+                    self.sprite_shifter_pattern_high[i] = self.sprite_shifter_pattern_high[i].wrapping_shl(1);
+                }
+            }
+        }
+    }
+
+    fn update_sprite_shifters(&mut self) {
+        self.update_background_shifters();
+        self.update_foreground_shifters();
     }
 
     fn increment_scroll_x(&mut self) {
