@@ -17,7 +17,7 @@ pub fn init_logger() -> Result<(), fern::InitError> {
         //     .chain(
         //         fern::Dispatch::new()
         //         .level(log::LevelFilter::Trace)
-        //         .filter(|metadata| metadata.level() == log::LevelFilter::Info)
+        //         .filter(|metadata| metadata.level() == log::LevelFilter::Error)
         //         .chain(stdout())
         //     )
         //     // .level(log::LevelFilter::Debug)
@@ -35,9 +35,10 @@ pub fn init_logger() -> Result<(), fern::InitError> {
         //     .filter(|metadata| metadata.level() == log::LevelFilter::Trace)
         //     .chain(
         //         OpenOptions::new()
-        //         .write(true)
         //         .create(true)
+        //         .write(true)
         //         .append(false)
+        //         // .create_new(true)
         //         .open("cputrace.log")?
         //     )
         // )

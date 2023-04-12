@@ -11,7 +11,7 @@ const STACK_PAGE_START: usize = 0x100;
 
 const STACK_POINTER_START: usize = 0xFD;
 const RESET_PROGRAM_POINTER_ADDRESS: usize = 0xFFFC;
-const PAGE_CROSSING_CYCLES: f32 = 1f32;
+const PAGE_CROSSING_CYCLES: u64 = 1;
 
 bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -32,7 +32,7 @@ pub struct CPU<'a> {
 
     pub stack_pointer: u8,
 
-    pub cycles: u128,
+    pub cycles: u64,
 
     pub register_a: u8,
     pub register_x: u8,
@@ -60,25 +60,25 @@ mod interrupts {
     pub struct CpuInterrupt {
         pub interrupt_type: InterruptType,
         pub vector_addr: u16,
-        pub cycles: f32,
+        pub cycles: u64,
     }
 
     pub const BRK: CpuInterrupt = CpuInterrupt {
         interrupt_type: InterruptType::BRK,
         vector_addr: BRK_INTERRUPT_VECTOR_ADDRESS,
-        cycles: 1f32,
+        cycles: 1,
     };
 
     pub const IRQ: CpuInterrupt = CpuInterrupt {
         interrupt_type: InterruptType::IRQ,
         vector_addr: IRQ_INTERRUPT_VECTOR_ADDRESS,
-        cycles: 7f32 / 3f32,
+        cycles: (7 / 3) + 1,
     };
 
     pub const NMI: CpuInterrupt = CpuInterrupt {
         interrupt_type: InterruptType::NMI,
         vector_addr: NMI_INTERRUPT_VECTOR_ADDRESS,
-        cycles: 8f32 / 3f32,
+        cycles: (8 / 3) + 1,
     };
 }
 
@@ -120,7 +120,7 @@ impl<'a> CPU<'a> {
             self.status.bits(), self.stack_pointer, self.status
         );
         
-        self.bus.tick(8f32);
+        self.bus.tick(8);
     }
 
     pub fn get_opcode_data_address(&mut self, index: usize, access_mode: MemoryAccessMode, read: bool) -> u16 {
@@ -292,7 +292,13 @@ impl<'a> CPU<'a> {
         }
     }
 
-    pub fn cpu_step(&mut self) -> f32 {
+    // pub fn step_for_cycles(&mut self, cycles: usize) {
+    //     let cycles = cycles as u128;
+    //     let cycles_since_start = self.bus.cpu_cycles;
+        
+    //     let mut elapsed_cycles = 
+    // }
+    pub fn cpu_step(&mut self) -> u64 {
         if self.bus.poll_nmi_interrupt() {
             self.interrupt(interrupts::NMI);
             self.bus.nmi_handled();
@@ -369,9 +375,9 @@ impl<'a> CPU<'a> {
         };
     }
 
-    pub fn execute_opcode(&mut self) -> f32 {
+    pub fn execute_opcode(&mut self) -> u64 {
         debug!("!! Execute opcode start !!");
-        trace!("!!!Program Pointer: {:04X}", self.program_pointer);
+        // trace!("!!!Program Pointer: {:04X}", self.program_pointer);
 
         let cycles = self.bus.cpu_cycles;
         
@@ -647,20 +653,21 @@ impl<'a> CPU<'a> {
             _ => panic!("Unknown opcode {:?}", opcode),
         }
 
-        self.cycles += opcode_metadata.cycles as u128; 
-        self.bus.tick(opcode_metadata.cycles as f32);
+        self.cycles += opcode_metadata.cycles as u64;
+        self.bus.tick(opcode_metadata.cycles as u64);
         
         if program_pointer != self.program_pointer {
-            trace!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
+            // trace!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
             debug!("There was a jump from {:X} to {:X}", program_pointer, self.program_pointer);
         } else {
-            trace!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
+            // trace!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
             debug!("Advancing PC from {:X} to {:X}", self.program_pointer, self.program_pointer + (opcode_metadata.length - 1) as usize);
             self.program_pointer += (opcode_metadata.length - 1) as usize;
 
         }
 
-        return self.bus.cpu_cycles - cycles;;
+        return self.bus.cpu_cycles - cycles;
+        // return 0.0f32;
     }
 
     pub fn set_carry_status(&mut self) {
@@ -1200,7 +1207,7 @@ impl<'a> CPU<'a> {
         if condition {
             debug!("Branched {:?}", memory_mode);
 
-            self.bus.tick(1f32);
+            self.bus.tick(1);
             
             let displacement = self.get_opcode_data_address(
                 self.program_pointer, memory_mode, true

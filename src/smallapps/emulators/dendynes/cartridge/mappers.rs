@@ -48,8 +48,8 @@ impl Mapper for nrom_mapper::NROMMapper {
     fn map_cpu_read(&self, index: usize) -> usize {
         if self.prg_banks_count > 1 {
             let memory_span = nrom_mapper::BANK_PAGE_SIZE * self.prg_banks_count as usize;
-            
-            return index & (memory_span & 1); 
+            // println!("Mapping: {:05X}; {:05X}; {:05X}; {:05X}", index, memory_span, memory_span - 1, index & (memory))
+            return index & (memory_span - 1); 
         } else {
             return index & (nrom_mapper::BANK_PAGE_SIZE - 1);
         }

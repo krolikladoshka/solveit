@@ -1,13 +1,13 @@
-use core::borrow;
-use std::{path::Path, rc::Rc, cell::RefCell, borrow::{BorrowMut, Borrow}, time::SystemTime};
+use std::{path::Path, rc::Rc, cell::RefCell, borrow::{BorrowMut, Borrow}, time::SystemTime, collections::HashMap};
 use graphics::{image, Transformed};
-use ::image::{ImageBuffer, RgbImage, RgbaImage};
+use ::image::RgbaImage;
+use lazy_static::lazy_static;
 use log::warn;
-use piston::{WindowSettings, Event, Loop, EventLoop, EventSettings};
+use piston::{WindowSettings, Event, Loop, EventLoop, EventSettings, Input, Button, Key, ButtonState};
 use piston_window::{PistonWindow, Texture, TextureSettings};
-use crate::smallapps::emulators::dendynes::{logging::init_logger, ppu::{CYCLES_TO_DRAW_SCANLINE, SCANLINES_PER_FRAME, SCANLINES_COUNT, SCREEN_WIDTH, SCREEN_HEIGHT, PALETTE}};
+use crate::smallapps::emulators::dendynes::{logging::init_logger, ppu::{CYCLES_TO_DRAW_SCANLINE, SCANLINES_COUNT, SCREEN_WIDTH, SCREEN_HEIGHT, PALETTE}};
 
-use self::{bus::Bus, cartridge::Cartridge, ppu::PPU, cpu::processor::CPU};
+use self::{bus::{Bus, joypad::JoypadButtons}, cartridge::Cartridge, ppu::PPU, cpu::processor::CPU};
 
 pub mod bus;
 pub mod cpu;
@@ -22,15 +22,118 @@ pub struct Dendy {
 const WINDOW_WIDTH: usize = 800;
 const WINDOW_HEIGHT: usize = 600;
 
-fn clock_cpu(cpu: &mut CPU, cycles_to_run: usize) {
+fn clock_cpu(cpu: &mut CPU, cycles_to_run: u64) {
     let mut cycles = 0;
-    
+    let cycles_since_start = cpu.bus.cpu_cycles;
+    // cpu.step_for_cycles(cycles_to_run);
     while cycles < cycles_to_run {
-        let elapsed_cpu_cycles = cpu.cpu_step();
-
-        cycles += elapsed_cpu_cycles.round() as usize;
+        let elapsed_cycles = cpu.cpu_step();
+        // cycles += cpu.cpu_step();
+        cycles += elapsed_cycles;
+        // let elapsed_cycles = cpu.bus.cpu_cycles - cycles_since_start;
+        if elapsed_cycles == 0 {
+            println!("No cycles elapsed! {} {} {}", cycles_since_start, elapsed_cycles, cycles);
+        }
+        // cycles += elapsed_cycles as usize;
+        // cycles += elapsed_cpu_cycles;
     }
+    println!("run cycles: {}; {}", cycles, cycles_to_run);
 }
+
+/*
+    Q - sq1
+    E - cross1
+    R - triangle1
+    T - circle1
+    1 - start1
+    share - options1
+    W - up1
+    S - down1
+    A - left1
+    D - right1
+ */
+
+// well, those keys are mapped by my external DS5 mapping tool for windows
+// totally inconvinient
+lazy_static! {
+    pub static ref USER1_INPUT_MAP: HashMap<Key, JoypadButtons>  = {
+        let mut hashmap = HashMap::new();
+
+        hashmap.insert(Key::Q, JoypadButtons::A);
+        hashmap.insert(Key::E, JoypadButtons::B);
+        hashmap.insert(Key::R, JoypadButtons::A);
+        hashmap.insert(Key::T, JoypadButtons::A);
+
+        hashmap.insert(Key::D1, JoypadButtons::START);
+        hashmap.insert(Key::D2, JoypadButtons::SELECT);
+        hashmap.insert(Key::W, JoypadButtons::UP);
+        hashmap.insert(Key::S, JoypadButtons::DOWN);
+        hashmap.insert(Key::A, JoypadButtons::LEFT);
+        hashmap.insert(Key::D, JoypadButtons::RIGHT);
+
+        return hashmap;
+    };
+
+    pub static ref USER2_INPUT_MAP: HashMap<Key, JoypadButtons>  = {
+        let mut hashmap = HashMap::new();
+
+        hashmap.insert(Key::U, JoypadButtons::A);
+        hashmap.insert(Key::I, JoypadButtons::B);
+        hashmap.insert(Key::O, JoypadButtons::A);
+        hashmap.insert(Key::P, JoypadButtons::A);
+
+        hashmap.insert(Key::D3, JoypadButtons::START);
+        hashmap.insert(Key::D4, JoypadButtons::SELECT);
+        hashmap.insert(Key::Up, JoypadButtons::UP);
+        hashmap.insert(Key::Down, JoypadButtons::DOWN);
+        hashmap.insert(Key::Left, JoypadButtons::LEFT);
+        hashmap.insert(Key::Right, JoypadButtons::RIGHT);
+
+        return hashmap;
+    };
+}
+
+fn handle_user_1_input<'a>(cpu: &'a mut CPU, input: &Input) {
+    match &input {
+        Input::Button(button_args) => {
+            if let Button::Keyboard(key) = button_args.button {
+                if let Some(joypad_button) = USER1_INPUT_MAP.get(&key) {
+                    match button_args.state {
+                        ButtonState::Press => {
+                            cpu.bus.joypads[0].press_button(*joypad_button);
+                        },
+                        ButtonState::Release => {
+                            cpu.bus.joypads[0].release_button(*joypad_button);
+                        },
+                    }
+                }
+            }
+        },
+        _ => {},
+    } 
+}
+
+
+fn handle_user_2_input<'a>(cpu: &'a mut CPU, input: &Input) {
+    match &input {
+        Input::Button(button_args) => {
+            if let Button::Keyboard(key) = button_args.button {
+                if let Some(joypad_button) = USER2_INPUT_MAP.get(&key) {
+                    match button_args.state {
+                        ButtonState::Press => {
+                            cpu.bus.joypads[1].press_button(*joypad_button);
+                        },
+                        ButtonState::Release => {
+                            cpu.bus.joypads[1].release_button(*joypad_button);
+                        },
+                    }
+                }
+            }
+        },
+        _ => {},
+    } 
+}
+
 
 pub fn dendy_run() {
     init_logger().unwrap();
@@ -39,8 +142,10 @@ pub fn dendy_run() {
 
     let current_file = Path::new(file!());
 
-    let cartridge_path = "tests/roms/donkey kong.nes";
+    // let cartridge_path = "tests/roms/donkey kong.nes";
     // let cartridge_path = "tests/roms/nestest.nes";
+    let cartridge_path = "tests/roms/Super_mario_brothers.nes";
+    // let cartridge_path = "tests/roms/Bomber_man.nes";
     let cartridge_path = current_file.parent().unwrap().join(cartridge_path);
 
     let mut cartridge = Rc::new(
@@ -52,8 +157,6 @@ pub fn dendy_run() {
     
     let mut bus = Bus::new(&mut ppu_device, cartridge.clone());
     let mut cpu = CPU::new(&mut bus);
-
-    // cpu.run();
 
     let mut window: PistonWindow = WindowSettings::new(
         "Dendynes emulator", [WINDOW_WIDTH as f64, WINDOW_HEIGHT as f64]
@@ -89,15 +192,14 @@ pub fn dendy_run() {
     while let Some(event) = window.next() {
         match event {
             Event::Input(input, _) => {
+                handle_user_1_input(&mut cpu, &input);
+                handle_user_2_input(&mut cpu, &input);
             },
             Event::Loop(kind) => {
                 match kind {
-                    Loop::Idle(args) => {
-                        println!("Idling {}", args.dt);
-                    },
                     Loop::Update(args) => {
                         // let cycles_per_update = ((cpu_cycles_for_frame as f64) * args.dt).round() as usize;
-                        let cycles_per_update = (cpu_cycles_for_frame);
+                        let cycles_per_update = (cpu_cycles_for_frame) as u64;
                         let start = SystemTime::now();
                         clock_cpu(cpu.borrow_mut(), cycles_per_update);
                         let end = SystemTime::now();
@@ -169,8 +271,6 @@ pub fn dendy_run() {
                                 end2.duration_since(start).unwrap().as_secs_f32(),
                                 end3.duration_since(start).unwrap().as_secs_f32()
                             )
-
-                            
                         });
                     },
                     _ => {},

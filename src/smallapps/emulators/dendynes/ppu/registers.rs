@@ -192,6 +192,16 @@ impl LoopyRegister {
 }
 
 
+impl Controller {
+    pub fn get_sprite_size(&self) -> u8 {
+        if self.contains(Self::SPRITE_SIZE) {
+            return 16;
+        } else {
+            return 8;
+        }
+    }
+}
+
 impl Status {
     pub fn read(&mut self, open_bus: u8) -> u8 {
         let result = self.bits() | (open_bus & OPEN_BUS_REGISTER_MASK);

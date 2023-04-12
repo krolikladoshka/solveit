@@ -1,6 +1,11 @@
+pub mod joypad;
+
 use std::{rc::Rc, cell::RefCell};
 
+use bitflags::BitFlags;
 use log::{warn, debug, error, trace};
+
+use self::joypad::Joypad;
 
 use super::{ppu::PPU, cartridge::Cartridge, memory::accessing_mode::MemoryAccessMode};
 
@@ -62,18 +67,21 @@ const PROGRAM_ROM_PAGE_END: usize = 0xFFFF;
 
 pub struct Bus<'a> {
     pub cpu_memory: [u8; CPU_MEMORY_SIZE],
-    pub cpu_cycles: f32,
+    pub cpu_cycles: u64,
     pub ppu: &'a mut PPU,
     pub cartridge: Rc<RefCell<Cartridge>>,
+
+    pub joypads: [Joypad; 2],
 }
 
 impl<'a> Bus<'a> {
     pub fn new(ppu_device: &'a mut PPU, cartridge: Rc<RefCell<Cartridge>>) -> Self {
         let mut bus = Bus {
             cpu_memory: [0; CPU_MEMORY_SIZE],
-            cpu_cycles: 0f32,
+            cpu_cycles: 0u64,
             ppu: ppu_device,
             cartridge: cartridge,
+            joypads: [Joypad::new(); 2],
         };
 
         return bus;
@@ -125,8 +133,10 @@ impl<'a> Bus<'a> {
             },
             JOYPAD_1_IO_ADDRESS | JOYPAD_2_IO_ADDRESS => {
                 warn!("Attempt to read joypad registers {:X}", index);
-
-                return 0;
+            
+                let joypad_index = (index & 0x1) as usize;
+            
+                return self.joypads[joypad_index].read();
             },
             APU_IO_UNUSED_PAGE_START..=APU_IO_UNUSED_PAGE_END => {
                 warn!("Attempt to read unused APU/IO memory {:X}", index);
@@ -138,7 +148,7 @@ impl<'a> Bus<'a> {
                 
                 return self.cartridge.borrow().cpu_read_u8(index);
             },
-            CARTRIDGE_PAGE_START..=CARTRIDGE_PAGE_END => {
+            CARTRIDGE_PAGE_START..=usize::MAX => {
                 warn!("Attempt to read unused cartridge (PRG ROM/RAM) space {:X}", index);
 
                 return self.cartridge.borrow().cpu_read_u8(index);
@@ -184,20 +194,20 @@ impl<'a> Bus<'a> {
                 let start_address = (value as u16) << 8;
                 let end_address = ((value as u16) << 8) | 0x00FF; 
                 
-                if self.cpu_cycles.round() as usize % 2 == 1 {
+                if self.cpu_cycles % 2 == 1 {
                     cycles += 1;
-                    self.tick(1f32);
+                    self.tick(1);
                 }
 
                 for address in start_address..=end_address {
                     let value = self.read_memory_u8(address as usize);
                     
-                    self.tick(1f32);
+                    self.tick(1);
                     cycles += 1;
                     
                     self.ppu.write_oam_dma_register_seq(value);
                     
-                    self.tick(1f32);
+                    self.tick(1);
                     cycles += 1;
                 }
                 trace!("OAM DMA write took {} cycles", cycles);
@@ -218,8 +228,9 @@ impl<'a> Bus<'a> {
             },
             JOYPAD_1_IO_ADDRESS | JOYPAD_2_IO_ADDRESS => {
                 warn!("Attempt to read joypad registers {:X}", index);
-
-                // return 0;
+                let joypad_index = (index & 0x1) as usize;
+                
+                self.joypads[joypad_index].write();
             },
             APU_IO_UNUSED_PAGE_START..=APU_IO_UNUSED_PAGE_END => {
                 warn!("Attempt to write to unused APU/IO memory {:X}; value={:X}", index, value);
@@ -245,10 +256,16 @@ impl<'a> Bus<'a> {
         self.write_memory_u8(index + 1, high);
     }
 
-    pub fn tick(&mut self, cycles: f32) {
-        self.cpu_cycles += cycles;
+    pub fn tick(&mut self, cycles: u64) {
+        // if self.cpu_cycles == 134217730 || self.cpu_cycles == 134217730 {
+        //     error!("Received zero cycles! {}; {}; {}", self.cpu_cycles, self.ppu.total_cycles, cycles);
+        // }
+        // if cycles.round() as usize == 0  || cycles as usize == 0{
+        //     error!("Received zero cycles! {}; {}; {}", self.cpu_cycles, self.ppu.total_cycles, cycles)
+        // }
+        self.cpu_cycles += cycles as u64;
         // thrice the speed of cpu
-        for _ in 0..((cycles * 3f32).round() as usize) {
+        for _ in 0..(cycles * 3) {
             self.ppu.tick();
         }
         // self.ppu.tick( as usize);

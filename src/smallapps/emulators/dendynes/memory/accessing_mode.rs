@@ -72,7 +72,7 @@ impl MemoryAccessMode {
                 };
 
                 if *crossed_page {
-                    cpu.bus.tick(1f32);
+                    cpu.bus.tick(1);
                 }
 
                 return result;
