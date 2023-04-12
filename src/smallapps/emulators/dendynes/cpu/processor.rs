@@ -523,7 +523,7 @@ impl<'a> CPU<'a> {
             },
             OpcodeType::Nop | OpcodeType::Nop1 | OpcodeType::Nop2 |
             OpcodeType::Nop3 | OpcodeType::Nop4 | OpcodeType::Nop5 |
-            OpcodeType::Nop6 => {
+            OpcodeType::Nop6 | OpcodeType::NopHlt => {
                 self.nop(opcode_metadata.memory_mode);
             },
             OpcodeType::OraI | OpcodeType::OraZp | OpcodeType::OraZpx |
@@ -649,7 +649,13 @@ impl<'a> CPU<'a> {
             OpcodeType::InsAx | OpcodeType::InsAy | OpcodeType::InsIx |
             OpcodeType::InsIy => {
                 self.ins(opcode_metadata.memory_mode);
-            }
+            },
+            OpcodeType::AxaAy | OpcodeType::AxaIy => {
+                self.axa(opcode_metadata.memory_mode);
+            },
+            OpcodeType::Say => {
+                self.say(opcode_metadata.memory_mode);
+            },
             _ => panic!("Unknown opcode {:?}", opcode),
         }
 
@@ -888,6 +894,22 @@ impl<'a> CPU<'a> {
     }
     
     /* +unofficial */
+    fn axa(&mut self, memory_mode: MemoryAccessMode) {
+        let address = self.get_opcode_data_address(self.program_pointer, memory_mode, true);
+        let [_, high] = u16::to_le_bytes(address);
+        let result = (self.register_a & self.register_x & high).wrapping_add(1);
+
+        self.write_opcode_result(self.program_pointer, result, memory_mode);
+    }
+
+    fn say(&mut self, memory_mode: MemoryAccessMode) {
+        let address = self.get_opcode_data_address(self.program_pointer, memory_mode, true);
+        let [_, high] = u16::to_le_bytes(address);
+        let result = self.register_y & (high + 1);
+
+        self.write_opcode_result(self.program_pointer, result, memory_mode);
+    }
+
     fn aso(&mut self, memory_mode: MemoryAccessMode) {
         let result = self.asl(memory_mode);
         self.or_register_a(result);

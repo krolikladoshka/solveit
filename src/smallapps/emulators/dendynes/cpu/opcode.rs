@@ -142,6 +142,7 @@ pub enum OpcodeType {
     LdyAx = 0xBC,
 
     // implemented
+    NopHlt = 0x02,
     Nop = 0xEA,
     Nop1 = 0x1A,
     Nop2 = 0x3A,
@@ -310,6 +311,11 @@ pub enum OpcodeType {
     InsAy = 0xFb,
     InsIx = 0xE3,
     InsIy = 0xF3,
+
+    AxaAy = 0x9F,
+    AxaIy = 0x93,
+
+    Say = 0x9C,
 }
 
 
@@ -455,6 +461,7 @@ lazy_static! {
         Opcode::new(OpcodeType::LdyA, "LDY", 3, 4, MemoryAccessMode::Absolute),
         Opcode::new(OpcodeType::LdyAx, "LDY", 3, 4, MemoryAccessMode::AbsoluteX(true)),
         
+        Opcode::new(OpcodeType::NopHlt, "HLT", 1, 2, MemoryAccessMode::Implied),
         Opcode::new(OpcodeType::Nop, "NOP", 1, 2, MemoryAccessMode::Implied),
         Opcode::new(OpcodeType::Nop1, "NOP1", 1, 2, MemoryAccessMode::Implied),
         Opcode::new(OpcodeType::Nop2, "NOP2", 1, 2, MemoryAccessMode::Implied),
@@ -617,6 +624,10 @@ lazy_static! {
         Opcode::new(OpcodeType::InsIx, "INS", 2, 8, MemoryAccessMode::IndirectX),
         Opcode::new(OpcodeType::InsIy, "INS", 2, 8, MemoryAccessMode::IndirectY(false)),
 
+        Opcode::new(OpcodeType::AxaAy, "AXA", 3, 5, MemoryAccessMode::AbsoluteY(false)),
+        Opcode::new(OpcodeType::AxaIy, "AXA", 2, 6, MemoryAccessMode::IndirectY(false)),
+
+        Opcode::new(OpcodeType::Say, "SAY", 3, 5, MemoryAccessMode::AbsoluteX(false)),
     ];
 
     pub static ref OPCODES_MAP: HashMap<OpcodeType, &'static Opcode> = {

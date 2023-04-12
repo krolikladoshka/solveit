@@ -22,4 +22,4 @@ enum-primitive-derive = "*"
 num-traits = "*"
 
 [profile.dev]
-opt-level = 3
+opt-leve = 3

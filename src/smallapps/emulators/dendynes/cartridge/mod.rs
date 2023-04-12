@@ -13,6 +13,7 @@ impl From<u8> for MapperType {
     fn from(value: u8) -> Self {
         return match value {
             0 => MapperType::NROM,
+            2 | 32  => MapperType::UxRom,
             _ => panic!("Unable to convert {} to MapperType", value),
         };
     }
@@ -22,6 +23,7 @@ impl Into<u8> for MapperType {
     fn into(self) -> u8 {
         return match self {
             MapperType::NROM => 0,
+            MapperType::UxRom => 2
         };
     }
 }
@@ -175,16 +177,26 @@ impl Cartridge {
             Ok((_, result)) => result,
             Err(err) => panic!("Could not load ROM file: failed to parse PRG & CHR roms; {}", err),
         };
-        let mapper = Box::new(
+
+        let mut rom = vec![0; PRG_BANK_SIZE * header.prg_banks_count as usize];
+        rom[0..prg_rom.len()].copy_from_slice(prg_rom.as_slice());
+        
+
+        let chr_rom = if header.chr_banks_count == 0 {
+            vec![0; PRG_BANK_SIZE]
+        } else {
+            chr_rom
+        };
+
+        let mapper = 
             new_mapper_by_type(
                 header.mapper_id.into(),
                 header.clone(),
-            )
-        );
+            );
 
         let rom = Cartridge {
             header: header,
-            prg_memory: prg_rom,
+            prg_memory: rom,
             chr_memory: chr_rom,
             mapper_type: header.mapper_id.into(),
             prg_banks_count: header.prg_banks_count,
@@ -205,8 +217,7 @@ impl Cartridge {
 
     pub fn cpu_write_u8(&mut self, index: usize, value: u8) {
         let mapped_index = self.mapper.map_cpu_write(index, value);
-
-        self.prg_memory[mapped_index] = value;
+        // self.prg_memory[mapped_index] = value;
     }
     
     pub fn ppu_read_u8(&self, index: usize) -> u8 {
@@ -217,7 +228,9 @@ impl Cartridge {
 
     pub fn ppu_write_u8(&mut self, index: usize, value: u8) {
         let mapped_index = self.mapper.map_ppu_write(index, value);
-
-        self.chr_memory[mapped_index] = value;
+        if self.mapper.has_ram() {
+            self.chr_memory[mapped_index] = value;
+            // self.prg_memory[mapped_index] = value;   
+        }
     }
 }

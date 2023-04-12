@@ -37,7 +37,7 @@ fn clock_cpu(cpu: &mut CPU, cycles_to_run: u64) {
         // cycles += elapsed_cycles as usize;
         // cycles += elapsed_cpu_cycles;
     }
-    println!("run cycles: {}; {}", cycles, cycles_to_run);
+    // println!("run cycles: {}; {}", cycles, cycles_to_run);
 }
 
 /*
@@ -144,8 +144,11 @@ pub fn dendy_run() {
 
     // let cartridge_path = "tests/roms/donkey kong.nes";
     // let cartridge_path = "tests/roms/nestest.nes";
-    let cartridge_path = "tests/roms/Super_mario_brothers.nes";
+    // let cartridge_path = "tests/roms/Super_mario_brothers.nes";
+    // let cartridge_path = "tests/roms/DuckTales (USA).nes";
     // let cartridge_path = "tests/roms/Bomber_man.nes";
+    let cartridge_path = "tests/roms/Contra (U).nes";
+    // let cartridge_path = "tests/roms/Duck Hunt (World).nes";
     let cartridge_path = current_file.parent().unwrap().join(cartridge_path);
 
     let mut cartridge = Rc::new(
@@ -204,12 +207,12 @@ pub fn dendy_run() {
                         clock_cpu(cpu.borrow_mut(), cycles_per_update);
                         let end = SystemTime::now();
 
-                        println!(
-                            "Update took: dt {}; clock: {}ms; {}s",
-                            args.dt,
-                            end.duration_since(start).unwrap().as_millis(),
-                            end.duration_since(start).unwrap().as_secs_f32(),
-                        );
+                        // println!(
+                        //     "Update took: dt {}; clock: {}ms; {}s",
+                        //     args.dt,
+                        //     end.duration_since(start).unwrap().as_millis(),
+                        //     end.duration_since(start).unwrap().as_secs_f32(),
+                        // );
                     },
                     Loop::Render(_args) => {
                         window.draw_2d(&event, |c, g, d| {
@@ -265,12 +268,12 @@ pub fn dendy_run() {
 
                             texture_context.encoder.flush(d);
                             let end3 = SystemTime::now();
-                            println!(
-                                "Draw took: {}; Texture update: {}; Flush: {}",
-                                end1.duration_since(start).unwrap().as_secs_f32(),
-                                end2.duration_since(start).unwrap().as_secs_f32(),
-                                end3.duration_since(start).unwrap().as_secs_f32()
-                            )
+                            // println!(
+                            //     "Draw took: {}; Texture update: {}; Flush: {}",
+                            //     end1.duration_since(start).unwrap().as_secs_f32(),
+                            //     end2.duration_since(start).unwrap().as_secs_f32(),
+                            //     end3.duration_since(start).unwrap().as_secs_f32()
+                            // )
                         });
                     },
                     _ => {},

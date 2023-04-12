@@ -239,7 +239,7 @@ impl<'a> Bus<'a> {
             },
             CARTRIDGE_PAGE_START..=CARTRIDGE_PAGE_END => {
                 warn!("Attempt to write to unused cartridge (PRG ROM/RAM) space {:X}; value={:X}", index, value);
-
+                self.cartridge.borrow_mut().cpu_write_u8(index, value);
                 // return 0
             },
             _ => {
