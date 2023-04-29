@@ -1,6 +1,6 @@
 mod leet;
 mod smallapps;
-use leet::medium::countnodeswiththehighestscore;
+use leet::medium::{countnodeswiththehighestscore, houserobberiii};
 use smallapps::emulators::{dendynes::dendy_run};
 
 fn main() {
@@ -38,5 +38,6 @@ fn main() {
     // }
     // dendy_run();
     // chip8_run();
-    countnodeswiththehighestscore::Solution::count_highest_score_nodes(vec![-1,2,0,2,0]);
+    // countnodeswiththehighestscore::Solution::count_highest_score_nodes(vec![-1,2,0,2,0]);
+    houserobberiii::Solution::rob(root);
 }

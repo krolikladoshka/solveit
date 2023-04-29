@@ -2,3 +2,4 @@
 // pub mod easy;
 pub mod findifpathexistsingraph;
 pub mod kitemswiththemaximumsum;
+pub mod reverselinkedlist;

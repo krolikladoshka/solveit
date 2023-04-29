@@ -1355,36 +1355,94 @@ colorama.init()
 # ])
 
 # test_method_calls_counter()
-# test_bound_method_calls_counter()
 
-nes_palette = '''
- 84  84  84    0  30 116    8  16 144   48   0 136   68   0 100   92   0  48   84   4   0   60  24   0   32  42   0    8  58   0    0  64   0    0  60   0    0  50  60    0   0   0
-152 150 152    8  76 196   48  50 236   92  30 228  136  20 176  160  20 100  152  34  32  120  60   0   84  90   0   40 114   0    8 124   0    0 118  40    0 102 120    0   0   0
-236 238 236   76 154 236  120 124 236  176  98 236  228  84 236  236  88 180  236 106 100  212 136  32  160 170   0  116 196   0   76 208  32   56 204 108   56 180 204   60  60  60
-236 238 236  168 204 236  188 188 236  212 178 236  236 174 236  236 174 212  236 180 176  228 196 144  204 210 120  180 222 120  168 226 144  152 226 180  160 214 228  160 162 160
-'''
+# # test_bound_method_calls_counter()
+#
+# nes_palette = '''
+#  84  84  84    0  30 116    8  16 144   48   0 136   68   0 100   92   0  48   84   4   0   60  24   0   32  42   0    8  58   0    0  64   0    0  60   0    0  50  60    0   0   0
+# 152 150 152    8  76 196   48  50 236   92  30 228  136  20 176  160  20 100  152  34  32  120  60   0   84  90   0   40 114   0    8 124   0    0 118  40    0 102 120    0   0   0
+# 236 238 236   76 154 236  120 124 236  176  98 236  228  84 236  236  88 180  236 106 100  212 136  32  160 170   0  116 196   0   76 208  32   56 204 108   56 180 204   60  60  60
+# 236 238 236  168 204 236  188 188 236  212 178 236  236 174 236  236 174 212  236 180 176  228 196 144  204 210 120  180 222 120  168 226 144  152 226 180  160 214 228  160 162 160
+# '''
+#
+# palette = [x for x in map(lambda q: q.strip(), nes_palette.split(' ')) if x != '']
+#
+#
+# def grouper(iterable, n):
+#     args = [iter(iterable)] * n
+#     return zip(*args, strict=True)
+#
+#
+# with open('palette.txt', 'r') as fin, open('palette.rs', 'w') as fout:
+#     fout.write('pub const PALETTE: [[u8; 3]; 64] = [\n')
+#     prefix = '    '
+#
+#     palette = [line.strip() for line in fin.readlines()]
+#     for palette_line in palette:
+#         colors = [
+#             int(x.strip())
+#             for x in palette_line.split(' ')
+#             if x.strip() != ''
+#         ]
+#         for group in grouper(colors, 3):
+#             fout.write(f'{prefix}{list(group)},\n')
+#         fout.write(f'{prefix}[0, 0, 0],\n')
+#         fout.write(f'{prefix}[0, 0, 0],\n')
+#     fout.write('];')
 
-palette = [x for x in map(lambda q: q.strip(), nes_palette.split(' ')) if x != '']
+# testit.run('leet.medium.searchinrotatedsortedarray', [
+#     [
+#         [1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1], 2
+#     ]
+# ])
+
+# testit.run('leet.medium.removenthnodefromendoflistt', [
+#     [
+#         [1,2,3,4,5], 2
+#     ],
+#     [
+#         [1, 2], 2
+#     ],
+# ])
+
+"""
+1. Дан набор прямоугольников, необходимо получить минимальный bbox,
+   который включает в себя все прямоугольники
+    
+    [
+        [(10, 10), (20, 0)],
+        [(15, 11), (22, 7)],
+    ]
+"""
 
 
-def grouper(iterable, n):
-    args = [iter(iterable)] * n
-    return zip(*args, strict=True)
+def find_bbox(rects: List):
+    first = rects[0]
+    most_left_x = first[0][0]
+    most_left_y = first[0][1]
+    most_right_x = first[1][0]
+    most_right_y = first[1][1]
+
+    for ((t_x, t_y), (b_x, b_y)) in rects:
+        if most_left_x > t_x:
+            most_left_x = t_x
+        if most_left_y < t_y:
+            most_left_y = t_y
+        if most_right_x < b_x:
+            most_right_x = b_x
+        if most_right_y > b_y:
+            most_right_y = b_y
+
+    return [
+        (most_left_x, most_left_y),
+        (most_right_x, most_right_y),
+    ]
 
 
-with open('palette.txt', 'r') as fin, open('palette.rs', 'w') as fout:
-    fout.write('pub const PALETTE: [[u8; 3]; 64] = [\n')
-    prefix = '    '
+rects = [
+    [(10, 10), (20, 0)],
+    [(15, 11), (22, 7)],
+    [(0, 0), (7, -20)]
+]
 
-    palette = [line.strip() for line in fin.readlines()]
-    for palette_line in palette:
-        colors = [
-            int(x.strip())
-            for x in palette_line.split(' ')
-            if x.strip() != ''
-        ]
-        for group in grouper(colors, 3):
-            fout.write(f'{prefix}{list(group)},\n')
-        fout.write(f'{prefix}[0, 0, 0],\n')
-        fout.write(f'{prefix}[0, 0, 0],\n')
-    fout.write('];')
+print(find_bbox(rects))
