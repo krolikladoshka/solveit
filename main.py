@@ -8,6 +8,7 @@ import colorama
 from interviewquestions.decorators.countclassmethodcalls import test_method_calls_counter, \
     test_bound_method_calls_counter
 from leet import testit
+from leet.medium.designanatmmachine import ATM
 from leet.medium.designbrowserhistory import BrowserHistory
 from leet.structures import TreeNode
 from leet.testit import print_matrix
@@ -1445,4 +1446,94 @@ rects = [
     [(0, 0), (7, -20)]
 ]
 
-print(find_bbox(rects))
+# print(find_bbox(rects))
+#
+# testit.run('leet.hard.removeinvalidparentheses', [
+#     ["()())()"],
+# ])
+
+# testit.run('leet.hard.erectthefence', [
+#     [
+#         [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]]
+#     ]
+# ])
+
+# testit.run('leet.hard.sumofdistancesintree', [
+#     [
+#         6,
+#         [[0, 1], [0, 2], [2, 3], [2, 4], [2, 5]]
+#     ]
+# # ])
+# testit.run('leet.hard.minimumwindowsubstring', [
+#     # [
+#     #     'ADOBECODEBANC',
+#     #     'ABC',
+#     # ],
+#     [
+#         'AA',
+#         'AA',
+#     ]
+# ])
+#
+# from visualiseandsolve.school.scene import *
+
+# testit.run('leet.medium.coinchange', [
+#     [
+#         [1 ],
+#         11
+#     ]
+# ])
+
+# testit.run('leet.hard.wordladder', [
+#     [
+#         'hit',
+#         'cog',
+#         ["hot", "dot", "dog", "lot", "log", "cog"],
+#     ],
+# ])
+
+# testit.run('leet.medium.coinchangeii', [
+#     [
+#         5, [1, 2, 5],
+#     ],
+#     [
+#         1000000, [1, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]
+#     ]
+# ])
+
+# testit.run('leet.medium.longestsubarrayof1safterdeletingoneelement', [
+#     [
+#         [0, 1, 1, 1, 0, 1, 1, 0, 1],
+#     ],
+#     [
+#         [1, 1, 0, 1]
+#     ],
+#     [
+#         [1, 1, 0, 0, 1, 1, 1, 0, 1]
+#     ],
+#     [
+#         [1, 0, 0, 0, 0]
+#     ]
+# ])
+
+# atm = ATM()
+# atm.deposit([0, 0, 1, 2, 1])
+# print(atm.withdraw(600))
+# atm.deposit([0, 1, 0, 1, 1])
+# print(atm.withdraw(600))
+# print(atm.withdraw(550))
+
+
+# testit.run('leet.medium.maximizedistancetoclosestperson', [
+#     [[1, 0, 0, 0, 1, 0, 1]],
+#     [[1, 0, 0, 0]],
+#     [[0, 0, 0, 0]],
+#     [[0, 1]],
+#     [[1, 1]]
+# ])
+
+testit.run('leet.medium.permutationinstring', [
+    [
+        "adc", "dcda"
+    ],
+])
